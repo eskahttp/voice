@@ -19,6 +19,25 @@
   }
 }
 
+@theme {
+  --animate-error-fade: errorFade 1.5s ease-out forwards;
+}
+
+@keyframes errorFade {
+  0% {
+    opacity: 0;
+    color: #dc2626;
+  }
+  30% {
+    opacity: 1;
+    color: #dc2626;
+  }
+  100% {
+    opacity: 0.6;
+    color: orangered;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
