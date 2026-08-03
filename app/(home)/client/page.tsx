@@ -1,7 +1,6 @@
 export default function DiscordHome() {
     return (
         <div className="flex flex-col h-screen w-screen bg-[#1e1f22] text-gray-300 overflow-hidden">
-            {/* Title bar */}
             <div className="h-8 bg-[#1e1f22] flex items-center justify-between px-3 text-xs text-gray-400 select-none">
                 <div className="flex items-center gap-1">
                     <span className={'flex justify-center w-screen'} >👥 Друзья</span>
@@ -16,15 +15,7 @@ export default function DiscordHome() {
             </div>
 
             <div className="flex flex-1 overflow-hidden">
-                {/* Server sidebar */}
-                <div className="w-[72px] bg-[#1e1f22] flex flex-col items-center py-3 gap-2 overflow-y-auto">
-                    <div className="w-12 h-12 rounded-2xl bg-[#5865f2] flex items-center justify-center text-white font-bold hover:rounded-xl transition-all cursor-pointer">
-                        D
-                    </div>
-                    <div className="w-8 h-0.5 bg-[#2b2d31] rounded-full my-1" />
-                </div>
 
-                {/* Channels/DM list */}
                 <div className="w-60 bg-[#2b2d31] flex flex-col">
                     <div className="p-2 shadow-md">
                         <button className="w-full h-8 bg-[#1e1f22] rounded text-sm text-gray-300 hover:text-white px-2 text-center">
@@ -61,43 +52,15 @@ export default function DiscordHome() {
                                     +
                                 </button>
                             </div>
-                            {/* empty DM list */}
                         </div>
                     </div>
 
-                    {/* User panel */}
                     <div className="bg-[#232428] px-2 py-2 flex flex-col gap-2">
-
-                        <div className="flex items-center gap-1">
-                            <div className="flex items-center gap-2 flex-1 min-w-0 hover:bg-[#35373c] rounded px-1 py-1 cursor-pointer">
-                                <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white text-xs font-bold">
-                                    С
-                                </div>
-                                <div className="min-w-0">
-                                    <div className="text-xs text-white font-medium truncate">
-                                        спортик
-                                    </div>
-                                    <div className="text-[11px] text-gray-400 truncate">
-                                        В сети
-                                    </div>
-                                </div>
-                            </div>
-                            <button className="w-8 h-8 rounded hover:bg-[#35373c] text-gray-300 flex items-center justify-center">
-                                🎤
-                            </button>
-                            <button className="w-8 h-8 rounded hover:bg-[#35373c] text-gray-300 flex items-center justify-center">
-                                🎧
-                            </button>
-                            <button className="w-8 h-8 rounded hover:bg-[#35373c] text-gray-300 flex items-center justify-center">
-                                ⚙
-                            </button>
-                        </div>
                     </div>
                 </div>
 
-                {/* Main content */}
                 <div className="flex-1 flex flex-col bg-[#313338]">
-                    {/* Top bar */}
+
                     <div className="h-12 border-b border-black/20 flex items-center justify-between px-4 shadow-sm">
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2 text-white">
@@ -122,7 +85,6 @@ export default function DiscordHome() {
                         </button>
                     </div>
 
-                    {/* Content */}
                     <div className="flex-1 overflow-y-auto px-8 py-4">
                         <div className="relative mb-6">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">

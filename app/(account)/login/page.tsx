@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LoginForm from "@/app/(account)/login/components/loginform";
 
 export default function DiscordLogin() {
     return (
@@ -31,43 +32,14 @@ export default function DiscordLogin() {
                             Мы так рады видеть вас снова!
                         </p>
                     </div>
-
-                    <form className="space-y-5">
-                        <div>
-                            <label className="block text-xs font-bold text-gray-400 uppercase mb-2">
-                                Адрес электронной почты или номер телефона{' '}
-                                <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                className="w-full bg-[#1a1b1e] border border-black/20 rounded px-3 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition-colors"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-xs font-bold text-gray-400 uppercase mb-2">
-                                Пароль <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="password"
-                                className="w-full bg-[#1a1b1e] border border-black/20 rounded px-3 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition-colors"
-                            />
-                        </div>
-
-                        <button
-                            type="submit"
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded transition-colors"
-                        >
-                            Вход
-                        </button>
-
+                        <LoginForm/>
                         <p className="text-sm text-gray-400">
                             Нужна учётная запись?{' '}
                             <Link href="/register" className="text-indigo-400 hover:underline">
                                 Зарегистрироваться
                             </Link>
                         </p>
-                    </form>
+
                 </div>
             </div>
         </div>
