@@ -1,5 +1,5 @@
-import Account from "@/app/global/components/leftbar";
-import {TakeNickname} from "@/app/global/components/action/action";
+import Account from "./components/accounthtml";
+import {TakeNickname} from "./components/action/action";
 
 async function AccountInfo() {
     const Nickname = await TakeNickname()

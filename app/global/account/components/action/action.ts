@@ -12,7 +12,7 @@ export async function TakeNickname(): Promise<string> {
 
     const result = await pool.query('SELECT login_id FROM session WHERE cookie = $1',[token]);
 
-    if (result.rows.length < 0) redirect('/login');
+    if (result.rows.length === 0) redirect('/login');
 
     const profile = await pool.query('SELECT nickname FROM users WHERE id = $1', [result.rows[0].login_id]);
 
