@@ -38,7 +38,7 @@ export default function RoomPage({Nickname} : {Nickname: string}) {
             video={false}
             audio={true}
             data-lk-theme="default"
-            style={{ height: '100vh' }}
+            style={{ height: '200px' , width: '200px' }}
         >
             <VideoConference />
             <RoomAudioRenderer />
