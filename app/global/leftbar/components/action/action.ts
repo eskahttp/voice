@@ -48,6 +48,8 @@ export async function CreateServer(formData: FormData): Promise<void> {
     await pool.query('' +
         'INSERT INTO server_users (server_name,nickname, user_id ,server_id) VALUES ($1,$2,$3,$4)',[serverName,Nickname,CheckUser, server])
 
+    await pool.query('INSERT INTO voice_chanels (server_id,name) VALUES ($1,$2)',[server,'Лобби'])
+
 
     redirect(`/client/${server}`);
 

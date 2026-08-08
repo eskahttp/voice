@@ -4,15 +4,17 @@ import {
     LiveKitRoom,
     VideoConference,
     RoomAudioRenderer,
-    ControlBar,
 } from '@livekit/components-react';
 import '@livekit/components-styles';
 import { useEffect, useState } from 'react';
 
-export default function RoomPage({Nickname} : {Nickname: string}) {
-    const [token, setToken] = useState<string>('');
+interface Props {
+    Nickname: string;
+    room: string;
+}
 
-    const room = 'my-first-room';
+export default function RoomPage({ Nickname, room }: Props) {
+    const [token, setToken] = useState<string>('');
 
     useEffect(() => {
         (async () => {
@@ -26,7 +28,7 @@ export default function RoomPage({Nickname} : {Nickname: string}) {
                 console.error('Не удалось получить токен', e);
             }
         })();
-    }, []);
+    }, [room, Nickname]);
 
     if (!token) return <div>Подключение...</div>;
 
@@ -38,7 +40,7 @@ export default function RoomPage({Nickname} : {Nickname: string}) {
             video={false}
             audio={true}
             data-lk-theme="default"
-            style={{ height: '200px' , width: '200px' }}
+            style={{ height: '100%', width: '100%' }}
         >
             <VideoConference />
             <RoomAudioRenderer />

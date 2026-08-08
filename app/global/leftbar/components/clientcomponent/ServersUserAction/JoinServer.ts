@@ -22,7 +22,6 @@ export async function JoinServerAction(formData: FormData): Promise<void> {
     const Server = await pool.query('SELECT id,name FROM servers WHERE referal = $1', [ServerName])
 
 
-
     const IdServer = Server.rows[0].name ;
     const Nickname = UserNickname.rows[0].nickname;
     const UserId = CheckId.rows[0].login_id;
