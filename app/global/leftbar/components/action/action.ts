@@ -25,20 +25,8 @@ export async function CreateServer(formData: FormData): Promise<void> {
         .map(n => 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'[n % 52])
         .join('');
 
-    try
-    {
-        await pool.query('INSERT INTO servers (creator_id,name, referal) VALUES ($1,$2,$3)',
+    const TakeServer =  await pool.query('INSERT INTO servers (creator_id,name, referal) VALUES ($1,$2,$3) RETURNING id',
             [CheckUser, ServerName, result])
-    }
-    catch (e) {
-        console.log(e);
-        await pool.query('INSERT INTO servers (creator_id,name, referal) VALUES ($1,$2,$3)',
-            [CheckUser, ServerName, result])
-    }
-
-    const TakeServer = await pool.query(
-        'SELECT id FROM servers WHERE creator_id = $1 AND name = $2 AND referal = $3', [CheckUser, ServerName,result]);
-
     const serverId = TakeServer.rows[0].id;
 
     await pool.query(

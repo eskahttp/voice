@@ -1,5 +1,10 @@
+'use client';
+
 import UserServer from "@/app/(home)/client/[id]/components/RightPage/UserServer";
 import MessageServer from "@/app/(home)/client/[id]/components/RightPage/MessageServer";
+import {useEffect, useState} from "react";
+import {MessageAction} from "@/app/(home)/client/[id]/components/RightPage/MessageAction/MessageAction";
+import {io ,Socket} from "socket.io-client";
 
 interface Users {
     id: string;
@@ -11,8 +16,30 @@ interface Props {
     serverId: string;
 }
 
+interface Message {
+    id: string;
+    nickname: string;
+    message: string;
+    created_at: string;
+}
+
 
 function RightPage({users, serverId}: Props){
+    const [message, setMessage] = useState<Message[]>([]);
+
+
+    useEffect(() => {
+        const socket = io();
+
+        socket.on('message', (msg) => {
+            setMessage(prev => [...prev, msg]);
+        })
+
+        return ()=>  {socket.disconnect()}
+    }, []);
+
+
+
     return (<div className="flex h-screen w-full bg-[#1e1f22] text-gray-200">
         <div className="flex flex-1 flex-col">
 
@@ -30,14 +57,20 @@ function RightPage({users, serverId}: Props){
                     Центр страницы
                 </div>
 
-                <MessageServer/>
+                {message.map(mes => (<div key={mes.id} >
+                    <MessageServer
+                        nickname={mes.nickname}
+                        message={mes.message}
+                        created_at={mes.created_at}
+                    /></div>))}
 
             </div>
 
             <div className="px-4 pb-6">
-                <form className="flex items-center gap-2 rounded-lg bg-[#383a40] px-4 py-3 focus-within:ring-2 focus-within:ring-indigo-500/50 transition-all">
+                <form action={MessageAction} className="flex items-center gap-2 rounded-lg bg-[#383a40] px-4 py-3 focus-within:ring-2 focus-within:ring-indigo-500/50 transition-all">
                     <input
                         type="text"
+                        name='message'
                         placeholder="Написать"
                         className="flex-1 bg-transparent text-sm text-gray-200 placeholder-gray-500 outline-none"
                     />

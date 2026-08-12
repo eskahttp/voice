@@ -1,6 +1,10 @@
-interface Props {}
+interface Props {
+    nickname: string
+    message: string
+    created_at: string
+}
 
-function MessageServer({}: Props) {
+function MessageServer({nickname,message,created_at}: Props) {
     return (
         <div className="flex flex-col gap-4 px-4 py-4">
             <div className="flex gap-3 hover:bg-gray-800/40 -mx-4 px-4 py-1 transition-colors">
@@ -10,12 +14,12 @@ function MessageServer({}: Props) {
                 <div className="flex flex-col min-w-0 flex-1">
                     <div className="flex items-baseline gap-2">
                         <span className="text-sm font-semibold text-white hover:underline cursor-pointer">
-                            спортик
+                            {nickname}
                         </span>
-                        <span className="text-xs text-gray-500">20:22</span>
+                        <span className="text-xs text-gray-500">{created_at}</span>
                     </div>
                     <p className="text-sm text-gray-200 leading-relaxed break-words">
-                        Сообщение
+                        {message}
                     </p>
                 </div>
             </div>
