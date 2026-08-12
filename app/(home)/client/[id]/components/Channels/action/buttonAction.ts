@@ -2,13 +2,27 @@
 
 import { pool } from '@/app/lib/db';
 
-interface Channels{
-    id: number;
+interface Channel {
+    id: string;
     name: string;
 }
 
-export async function TakeChannels(id:string): Promise<Channels[]>{
-    const Channels = await pool.query('SELECT id,name FROM voice_chanels WHERE server_id = $1', [id])
+interface Result {
+    serverName: string;
+    channels: Channel[];
+}
 
-    return Channels.rows
+export async function TakeChannelsAndServerName(id: string): Promise<Result> {
+    const [channelsRes, serverRes] = await Promise.all([
+        pool.query(
+            'SELECT id, name FROM voice_chanels WHERE server_id = $1',
+            [id]
+        ),
+        pool.query('SELECT name FROM servers WHERE id = $1', [id]),
+    ]);
+
+    return {
+        serverName: serverRes.rows[0].name,
+        channels: channelsRes.rows,
+    };
 }

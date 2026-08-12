@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import {ReactNode, useState} from 'react';
 import ButtonChannel from "@/app/(home)/client/[id]/components/Channels/ButtonChanel";
 import RoomPage from "@/app/(home)/client/[id]/components/livekit/LiveKit";
 
@@ -13,9 +13,10 @@ interface Props {
     name: string;
     channels: Channel[];
     nickname: string;
+    RightPage : ReactNode
 }
 
-function ServerPage({ name, channels, nickname }: Props) {
+function ServerPage({ name, channels, nickname , RightPage }: Props) {
     const [activeRoom, setActiveRoom] = useState<string | null>(null);
 
     return (
@@ -67,11 +68,10 @@ function ServerPage({ name, channels, nickname }: Props) {
                         key={activeRoom}
                         Nickname={nickname}
                         room={activeRoom}
+                        onLeave={() => setActiveRoom(null)}
                     />
                 ) : (
-                    <div className="flex-1 flex items-center justify-center text-gray-500">
-                        Выберите голосовой канал
-                    </div>
+                    <div>{RightPage}</div>
                 )}
             </main>
         </div>

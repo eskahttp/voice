@@ -29,18 +29,6 @@ export default function DiscordHome() {
                                 <span>👥</span>
                                 <span className="text-sm font-medium">Друзья</span>
                             </div>
-                            <div className="flex items-center gap-3 px-2 py-1.5 rounded hover:bg-[#35373c] text-gray-400 hover:text-gray-200 cursor-pointer">
-                                <span>🎁</span>
-                                <span className="text-sm font-medium">Nitro</span>
-                            </div>
-                            <div className="flex items-center gap-3 px-2 py-1.5 rounded hover:bg-[#35373c] text-gray-400 hover:text-gray-200 cursor-pointer">
-                                <span>🏪</span>
-                                <span className="text-sm font-medium">Магазин</span>
-                            </div>
-                            <div className="flex items-center gap-3 px-2 py-1.5 rounded hover:bg-[#35373c] text-gray-400 hover:text-gray-200 cursor-pointer">
-                                <span>⚙️</span>
-                                <span className="text-sm font-medium">Задания</span>
-                            </div>
                         </div>
 
                         <div className="mt-5">

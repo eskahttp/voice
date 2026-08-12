@@ -9,8 +9,7 @@ import {JoinServerAction} from "@/app/global/leftbar/components/clientcomponent/
 interface Props {
     ServerBar: {
         id: number;
-        server_name: string;
-        server_id: number;
+        name: string;
     }[]
 }
 
@@ -23,8 +22,8 @@ function AddServer({ServerBar}: Props){
     return (<div>
 
         {ServerBar.map(item => (<div key={item.id} >
-            <Link href={`/client/${item.server_id}`} className="w-12 h-12 rounded-2xl bg-[#5865f2] flex items-center justify-center text-white font-bold hover:rounded-xl transition-all cursor-pointer">
-                {item.server_name.slice(0,4)}
+            <Link href={`/client/${item.id}`} className="w-12 h-12 rounded-2xl bg-[#5865f2] flex items-center justify-center text-white font-bold hover:rounded-xl transition-all cursor-pointer">
+                {item.name.slice(0,4)}
            </Link>
         </div>))}
 

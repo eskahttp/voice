@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers';
 import { pool } from '@/app/lib/db';
 import {redirect} from "next/navigation";
+import {revalidatePath} from "next/cache";
 
 export async function CreateServer(formData: FormData): Promise<void> {
     const cookieStore = await cookies();
@@ -35,22 +36,18 @@ export async function CreateServer(formData: FormData): Promise<void> {
             [CheckUser, ServerName, result])
     }
 
-    const CheckNickname = await pool.query('SELECT nickname FROM users WHERE id = $1', [CheckUser])
-
-    const Nickname = CheckNickname.rows[0].nickname
-
     const TakeServer = await pool.query(
-        'SELECT id,name FROM servers WHERE creator_id = $1 AND name = $2 AND referal = $3', [CheckUser, ServerName,result]);
+        'SELECT id FROM servers WHERE creator_id = $1 AND name = $2 AND referal = $3', [CheckUser, ServerName,result]);
 
-    const server:string = TakeServer.rows[0].id
-    const serverName:string =  TakeServer.rows[0].name
+    const serverId = TakeServer.rows[0].id;
 
-    await pool.query('' +
-        'INSERT INTO server_users (server_name,nickname, user_id ,server_id) VALUES ($1,$2,$3,$4)',[serverName,Nickname,CheckUser, server])
+    await pool.query(
+        'INSERT INTO server_users (server_id,user_id) VALUES ($1,$2)',[serverId, CheckUser])
 
-    await pool.query('INSERT INTO voice_chanels (server_id,name) VALUES ($1,$2)',[server,'Лобби'])
+    await pool.query('INSERT INTO voice_chanels (server_id,name) VALUES ($1,$2)',[serverId,'Лобби'])
 
+    revalidatePath('/', 'layout');
 
-    redirect(`/client/${server}`);
+    redirect(`/client/${serverId}`);
 
 }

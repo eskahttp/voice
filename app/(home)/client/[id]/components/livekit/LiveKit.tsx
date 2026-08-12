@@ -11,9 +11,10 @@ import { useEffect, useState } from 'react';
 interface Props {
     Nickname: string;
     room: string;
+    onLeave: () => void;
 }
 
-export default function RoomPage({ Nickname, room }: Props) {
+export default function RoomPage({ Nickname, room , onLeave }: Props) {
     const [token, setToken] = useState<string>('');
 
     useEffect(() => {
@@ -39,6 +40,7 @@ export default function RoomPage({ Nickname, room }: Props) {
             connect={true}
             video={false}
             audio={true}
+            onDisconnected={onLeave}
             data-lk-theme="default"
             style={{ height: '100%', width: '100%' }}
         >
