@@ -6,7 +6,7 @@ interface Props {
 
 function MessageServer({nickname,message,created_at}: Props) {
     return (
-        <div className="flex flex-col gap-4 px-4 py-4">
+        <div className="flex flex-col gap-4 px-4 py-2">
             <div className="flex gap-3 hover:bg-gray-800/40 -mx-4 px-4 py-1 transition-colors">
                 <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gray-700 flex items-center justify-center text-xs text-gray-300">
                     123

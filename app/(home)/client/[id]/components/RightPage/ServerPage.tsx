@@ -21,7 +21,7 @@ function ServerPage({ name, channels, nickname , RightPage }: Props) {
 
     return (
         <div className="flex h-screen bg-[#1e1f22] text-gray-200">
-            <aside className="w-64 bg-[#2b2d31] flex flex-col border-r border-black/20">
+            <aside className="w-60 bg-[#2b2d31] flex flex-col border-r border-black/20">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-black/30 shadow-sm">
                     <h2 className="font-semibold text-white flex items-center gap-1">
                         {name}

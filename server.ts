@@ -19,8 +19,16 @@ app.prepare().then(() => {
     });
 
     io.on("connection", (socket) => {
-        socket.on("message", (msg) => {
-            io.emit("message", msg);
+        socket.on("joinRoom", (serverId) => {
+            socket.join(serverId);
+        });
+
+        socket.on("message", ({ serverId, msg }) => {
+            io.to(serverId).emit("message", msg);
+        });
+
+        socket.on("leaveRoom", (serverId) => {
+            socket.leave(serverId);
         });
 
         socket.on("disconnect", () => {

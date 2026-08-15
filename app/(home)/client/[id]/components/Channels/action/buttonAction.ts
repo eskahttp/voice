@@ -1,6 +1,7 @@
 'use server';
 
 import { pool } from '@/app/lib/db';
+import {redirect} from "next/navigation";
 
 interface Channel {
     id: string;
@@ -20,6 +21,8 @@ export async function TakeChannelsAndServerName(id: string): Promise<Result> {
         ),
         pool.query('SELECT name FROM servers WHERE id = $1', [id]),
     ]);
+
+    if (serverRes.rows.length === 0) redirect('/client')
 
     return {
         serverName: serverRes.rows[0].name,
