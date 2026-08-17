@@ -32,7 +32,7 @@ export async function CreateServer(formData: FormData): Promise<void> {
     await pool.query(
         'INSERT INTO server_users (server_id,user_id) VALUES ($1,$2)',[serverId, CheckUser])
 
-    await pool.query('INSERT INTO voice_chanels (server_id,name) VALUES ($1,$2)',[serverId,'Лобби'])
+    await pool.query('INSERT INTO voice_chanels (server_id,name) VALUES ($1,$2)',[serverId,'Lobby'])
 
     revalidatePath('/', 'layout');
 

@@ -20,7 +20,9 @@ function RightPage({ users, serverId, GetMessage,nickname }: Props) {
 
         socket.emit('joinRoom', serverId);
 
-        const handler = (msg: Message) => setMessage(prev => [...prev, msg]);
+        const handler = (msg: Message) => {
+            setMessage(prev => [...prev, msg]);
+        };
         socket.on('message', handler);
 
         return () => {
@@ -47,7 +49,7 @@ function RightPage({ users, serverId, GetMessage,nickname }: Props) {
         const hours = String(d.getHours()).padStart(2, '0');
         const minutes = String(d.getMinutes()).padStart(2, '0');
 
-        socket.emit('message', {serverId, id: Math.random() * 1000, nickname:nickname, message: Message, created_at: `${hours}:${minutes}`});
+        socket.emit('message', {serverId, id: crypto.randomUUID(), nickname:nickname, message: messageStr, created_at: `${hours}:${minutes}`});
 
         MessageAction(formData, serverId);
     }

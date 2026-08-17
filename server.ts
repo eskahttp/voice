@@ -23,7 +23,7 @@ app.prepare().then(() => {
             socket.join(serverId);
         });
 
-        socket.on("message", ({ serverId, msg }) => {
+        socket.on("message", ({ serverId, ...msg }) => {
             io.to(serverId).emit("message", msg);
         });
 

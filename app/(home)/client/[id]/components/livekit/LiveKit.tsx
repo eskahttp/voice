@@ -4,17 +4,32 @@ import {
     LiveKitRoom,
     VideoConference,
     RoomAudioRenderer,
+    useRoomContext,
 } from '@livekit/components-react';
 import '@livekit/components-styles';
+import { Room } from 'livekit-client';
 import { useEffect, useState } from 'react';
 
 interface Props {
     Nickname: string;
     room: string;
     onLeave: () => void;
+    onRoomConnected?: (room: Room) => void;
 }
 
-export default function RoomPage({ Nickname, room , onLeave }: Props) {
+function RoomBridge({ onRoomConnected }: { onRoomConnected?: (r: Room) => void }) {
+    const room = useRoomContext();
+
+    useEffect(() => {
+        if (room && onRoomConnected) {
+            onRoomConnected(room);
+        }
+    }, [room, onRoomConnected]);
+
+    return null;
+}
+
+export default function RoomPage({ Nickname, room, onLeave, onRoomConnected }: Props) {
     const [token, setToken] = useState<string>('');
 
     useEffect(() => {
@@ -44,6 +59,7 @@ export default function RoomPage({ Nickname, room , onLeave }: Props) {
             data-lk-theme="default"
             style={{ height: '100%', width: '100%' }}
         >
+            <RoomBridge onRoomConnected={onRoomConnected} />
             <VideoConference />
             <RoomAudioRenderer />
         </LiveKitRoom>

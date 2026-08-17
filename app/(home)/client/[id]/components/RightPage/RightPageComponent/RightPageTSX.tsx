@@ -16,14 +16,19 @@ function RightClient({users,SubmitAction, message, scrollRef}: Props){
                 <div className="flex items-center justify-between border-b border-black/40 bg-[#2b2d31] px-4 py-3">
                     <div className="flex items-center gap-2">
                         <span className="text-gray-400">#</span>
-                        <span className="text-sm font-semibold uppercase text-white">основной</span>
+                        <span className="text-sm font-semibold uppercase text-white">main</span>
                     </div>
                 </div>
 
                 <div ref={scrollRef} className="flex-1 overflow-y-auto flex flex-col">
                     <div className="mt-auto">
                         {message.map(mes => (
-                            <MessageServer key={mes.id} {...mes} />
+                            <MessageServer
+                                key={mes.id}
+                            message={mes.message}
+                            nickname={mes.nickname}
+                            created_at={mes.created_at}
+                            />
                         ))}
                     </div>
                 </div>
@@ -40,7 +45,7 @@ function RightClient({users,SubmitAction, message, scrollRef}: Props){
                             pattern=".*\S+.*"
                             autoComplete="off"
                             onInvalid={(e) => e.preventDefault()}
-                            placeholder="Написать"
+                            placeholder="Message"
                             className="flex-1 bg-transparent text-sm text-gray-200 placeholder-gray-500 outline-none"
                         />
                     </form>
@@ -49,7 +54,7 @@ function RightClient({users,SubmitAction, message, scrollRef}: Props){
 
             <div className="w-60 border-l border-black/40 bg-[#2b2d31] p-4">
                 <p className="mb-3 text-xs font-semibold uppercase text-gray-400">
-                    В сети — {users.length}
+                    Online — {users.length}
                 </p>
                 {users.map(u => (
                     <UserServer key={u.id} nickname={u.nickname} />
