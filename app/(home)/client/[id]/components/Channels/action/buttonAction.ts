@@ -9,7 +9,7 @@ interface Channel {
 }
 
 interface Result {
-    serverName: string;
+    serverName: { name: string; referal: string };
     channels: Channel[];
 }
 
@@ -19,13 +19,13 @@ export async function TakeChannelsAndServerName(id: string): Promise<Result> {
             'SELECT id, name FROM voice_chanels WHERE server_id = $1',
             [id]
         ),
-        pool.query('SELECT name FROM servers WHERE id = $1', [id]),
+        pool.query('SELECT name,referal FROM servers WHERE id = $1', [id]),
     ]);
 
     if (serverRes.rows.length === 0) redirect('/client')
 
     return {
-        serverName: serverRes.rows[0].name,
+        serverName: serverRes.rows[0],
         channels: channelsRes.rows,
     };
 }

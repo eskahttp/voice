@@ -94,9 +94,9 @@ function AccountInfo({ Nickname }: Props): JSX.Element {
     };
 
     return (
-        <div className="fixed bottom-0 left-[72px] w-[240px] bg-[#232428] flex flex-col z-50">
+        <div className="fixed bottom-0 w-[364px] flex flex-col z-50">
             {activeRoomId && (
-                <div className="flex items-center justify-between px-2 py-2 border-b border-black/30">
+                <div className="flex items-center justify-between px-3 py-2 mx-2 mt-2 rounded-xl bg-[#232428] border border-gray-500">
                     <div className="flex flex-col min-w-0">
                         <div className="text-xs text-green-400 font-semibold flex items-center gap-1">
                             <span className="w-2 h-2 rounded-full bg-green-400" />
@@ -116,12 +116,12 @@ function AccountInfo({ Nickname }: Props): JSX.Element {
                 </div>
             )}
             <AccountComponent
-            Nickname={Nickname}
-            activeRoomId={activeRoomId}
-            activeRoomName={activeRoomName}
-            toggleMic={toggleMic}
-            room={room}
-            micEnabled={micEnabled}
+                Nickname={Nickname}
+                activeRoomId={activeRoomId}
+                activeRoomName={activeRoomName}
+                toggleMic={toggleMic}
+                room={room}
+                micEnabled={micEnabled}
             />
         </div>
     );

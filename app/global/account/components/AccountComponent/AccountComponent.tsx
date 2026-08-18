@@ -14,11 +14,7 @@ function AccountComponent({
                               toggleMic, room, micEnabled
                           }: Props) {
     return (
-        // 👇 ВОТ ЗДЕСЬ регулируй позицию и размер:
-        // left-4    - отступ слева
-        // bottom-4  - отступ снизу
-        // w-72      - ШИРИНА окошка (меняй под себя: w-64, w-80, w-96 или w-[300px])
-        <div className="fixed bottom-2 left-2 w-86 z-50">
+        <div className="w-full p-2">
             <div className="flex items-center gap-1 px-2 py-2 bg-[#121212] rounded-xl shadow-lg border border-gray-500">
                 <div className="flex items-center gap-2 flex-1 min-w-0 hover:bg-[#35373c] rounded-xl px-1 py-1 cursor-pointer">
                     <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
