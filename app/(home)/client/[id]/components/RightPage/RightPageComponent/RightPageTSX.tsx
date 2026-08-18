@@ -11,9 +11,9 @@ interface Props { users: Users[]; SubmitAction: (formData:FormData)=> void; mess
 function RightClient({users,SubmitAction, message, scrollRef}: Props){
 
     return (
-        <div className="flex h-screen w-full bg-[#1e1f22] text-gray-200">
+        <div className="flex h-screen w-full bg-[#0d0d0f] text-gray-200 border-l border-[#232428]">
             <div className="flex flex-1 flex-col min-h-0">
-                <div className="flex items-center justify-between border-b border-black/40 bg-[#2b2d31] px-4 py-3">
+                <div className="flex items-center justify-between border-b border-[#232428] bg-[#0d0d0f] px-4 py-3">
                     <div className="flex items-center gap-2">
                         <span className="text-gray-400">#</span>
                         <span className="text-sm font-semibold uppercase text-white">main</span>
@@ -52,7 +52,7 @@ function RightClient({users,SubmitAction, message, scrollRef}: Props){
                 </div>
             </div>
 
-            <div className="w-60 border-l border-black/40 bg-[#2b2d31] p-4">
+            <div className="w-74 border-l border-[#232428] bg-[#0b0b0d] p-4">
                 <p className="mb-3 text-xs font-semibold uppercase text-gray-400">
                     Online — {users.length}
                 </p>

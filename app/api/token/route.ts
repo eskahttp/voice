@@ -12,9 +12,9 @@ export async function GET(req: NextRequest) {
 
     const IdUser = await pool.query('SELECT login_id FROM session WHERE cookie = $1', [Session])
 
-    const CheckUser = IdUser.rows[0].login_id
+    const CheckUser = String(IdUser.rows[0].login_id)
 
-    if (!CheckUser || null || undefined) redirect('/login');
+    if (!CheckUser) redirect('/login');
 
     const room = req.nextUrl.searchParams.get('room');
     const username = req.nextUrl.searchParams.get('username');

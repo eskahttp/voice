@@ -148,8 +148,8 @@ export default function LandingPage() {
                     </p>
 
                     <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                        <button className="group relative overflow-hidden rounded-full bg-gradient-to-r from-teal-500 to-cyan-600 px-8 py-4 font-medium text-black transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(32,178,170,0.6)]">
-              <Link href={'/client'} className="relative z-10 flex items-center gap-2">
+                        <Link href={'/client'} className="group relative overflow-hidden rounded-full bg-gradient-to-r from-teal-500 to-cyan-600 px-8 py-4 font-medium text-black transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(32,178,170,0.6)]">
+              <div className="relative z-10 flex items-center gap-2">
                 Join a channel
                 <svg
                     className="h-4 w-4 transition-transform group-hover:translate-x-1"
@@ -164,8 +164,8 @@ export default function LandingPage() {
                       d="M13 7l5 5m0 0l-5 5m5-5H6"
                   />
                 </svg>
-              </Link>
-                        </button>
+              </div>
+                        </Link>
 
                         <button className="rounded-full border border-white/10 bg-white/5 px-8 py-4 font-medium text-teal-100/80 backdrop-blur-md transition-all hover:border-teal-400/40 hover:bg-white/10">
                             Learn more

@@ -9,12 +9,12 @@ export default function HomeLink() {
 
     return (<div>
         {isActive ? (<div
-                className={'w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold hover:rounded-xl transition-all cursor-pointer bg-[#5865f2] select-none'}
+                className={'w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold hover:rounded-xl transition-all cursor-pointer bg-gradient-to-r from-teal-500 to-cyan-600 select-none'}
             >
                 👁️‍🗨️
             </div>) :(<Link
                 href={'/client'}
-                className={'w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold hover:rounded-xl transition-all cursor-pointer bg-[#2b2d31]'}
+                className={'w-12 h-12 bg-[#121212] rounded-2xl flex items-center justify-center text-white font-bold hover:rounded-xl transition-all cursor-pointer hover:bg-gradient-to-r from-teal-500 to-cyan-600'}
             >
                 👁️‍🗨️
             </Link>)}

@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: livekit-server
+    command: --config /etc/livekit.yaml
+    restart: unless-stopped
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+      - "50000-50100:50000-50100/udp"
+    volumes:
+      - ./livekit/livekit.yaml:/etc/livekit.yaml
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: livekit-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  nextjs-standalone:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nextjs-standalone-image
+    container_name: nextjs-standalone-container
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    env_file:
+      - .env.docker
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: Voice
+      POSTGRES_PASSWORD: root
+    volumes:
+      - pgdata:/var/lib/postgresql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  pgdata:

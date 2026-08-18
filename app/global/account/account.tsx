@@ -3,6 +3,7 @@
 import { JSX, useEffect, useState } from "react";
 import { RoomEvent } from 'livekit-client';
 import {useVoice} from "@/app/(home)/client/[id]/context/VoiceContext";
+import AccountComponent from "@/app/global/account/components/AccountComponent/AccountComponent";
 interface Props {
     Nickname: string;
 }
@@ -10,7 +11,20 @@ interface Props {
 function AccountInfo({ Nickname }: Props): JSX.Element {
     const { room, setRoom, activeRoomId, setActiveRoomId, activeRoomName, setActiveRoomName } = useVoice();
 
-    const [micEnabled, setMicEnabled] = useState(true);
+    const [micEnabled, setMicEnabled] = useState<boolean>(true);
+
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem("micEnabled");
+            if (saved !== null) {
+                setMicEnabled(JSON.parse(saved));
+            }
+        }
+        catch (e){
+            console.error(e);
+            setMicEnabled(true);
+        }
+    }, []);
 
     useEffect(() => {
         if (!room) return
@@ -39,16 +53,41 @@ function AccountInfo({ Nickname }: Props): JSX.Element {
     }, [room]);
 
     const toggleMic = async () => {
-        if (!room) return;
+        if (!room) {
+            setMicEnabled((prev) => {
+                const next = !prev;
+                try{
+                    localStorage.setItem("micEnabled", JSON.stringify(next));
+                    return next;
+                }
+                catch (e){
+                    console.error(e);
+                    return true
+                }
+            });
+            return;
+        }
 
         const currentlyEnabled = room.localParticipant.isMicrophoneEnabled;
-        await room.localParticipant.setMicrophoneEnabled(!currentlyEnabled);
+        const next = !currentlyEnabled;
+
+        await room.localParticipant.setMicrophoneEnabled(next);
+        setMicEnabled(next);
+        try{
+            localStorage.setItem("micEnabled", JSON.stringify(next));
+        }
+        catch (e){
+            console.error(e);
+        }
     };
 
     const leaveRoom = async () => {
         if (!room) return;
         await room.disconnect();
-        setMicEnabled(true);
+        const saved = localStorage.getItem("micEnabled");
+        if (saved !== null) {
+            setMicEnabled(JSON.parse(saved));
+        }
         setRoom(null);
         setActiveRoomId(null);
         setActiveRoomName(null);
@@ -76,45 +115,14 @@ function AccountInfo({ Nickname }: Props): JSX.Element {
                     </button>
                 </div>
             )}
-
-            <div className="flex items-center gap-1 px-2 py-2">
-                <div className="flex items-center gap-2 flex-1 min-w-0 hover:bg-[#35373c] rounded px-1 py-1 cursor-pointer">
-                    <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white text-xs font-bold">
-                        {Nickname[0]?.toUpperCase() || 'С'}
-                    </div>
-                    <div className="min-w-0">
-                        <div className="text-xs text-white font-medium truncate">
-                            {Nickname}
-                        </div>
-                        <div className="text-[11px] text-gray-400 truncate">
-                            {activeRoomId ? `In ${activeRoomName}` : 'Online'}
-                        </div>
-                    </div>
-                </div>
-
-                <button
-                    onClick={toggleMic}
-                    disabled={!room}
-                    className={`w-8 h-8 rounded hover:bg-[#35373c] flex items-center justify-center transition ${
-                        !room ? 'text-gray-600 cursor-not-allowed' :
-                            micEnabled ? 'text-gray-300' : 'text-red-400'
-                    }`}
-                    title={micEnabled ? 'Turn off the microphone' : 'Turn on the microphone'}
-                >
-                    {micEnabled ? '🎤' : '🚫'}
-                </button>
-
-                <button
-                    disabled={!room}
-                    className={'w-8 h-8 rounded hover:bg-[#35373c] flex items-center justify-center transition '}
-                >
-                    🎧
-                </button>
-
-                <button className="w-8 h-8 rounded hover:bg-[#35373c] text-gray-300 flex items-center justify-center" title="Настройки">
-                    ⚙
-                </button>
-            </div>
+            <AccountComponent
+            Nickname={Nickname}
+            activeRoomId={activeRoomId}
+            activeRoomName={activeRoomName}
+            toggleMic={toggleMic}
+            room={room}
+            micEnabled={micEnabled}
+            />
         </div>
     );
 }

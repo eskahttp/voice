@@ -1,13 +1,25 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Room, RoomEvent, Participant } from 'livekit-client';
+import {
+    Room,
+    RoomEvent,
+    Participant,
+    ParticipantEvent,
+    Track,
+} from 'livekit-client';
+import ButtonComponent from "@/app/(home)/client/[id]/components/Channels/ButtonComponents/ButtonComponent";
 
 interface Props {
     name: string;
     onClick?: () => void;
     active?: boolean;
     room?: Room | null;
+}
+
+function isMicOn(p: Participant) {
+    const pub = p.getTrackPublication(Track.Source.Microphone);
+    return !!pub && !pub.isMuted && !!pub.track;
 }
 
 function ButtonChannel({ name, onClick, active, room }: Props) {
@@ -19,82 +31,84 @@ function ButtonChannel({ name, onClick, active, room }: Props) {
             return;
         }
 
+        const subscribed = new Set<Participant>();
+
         const update = () => {
             setParticipants([
                 room.localParticipant,
-                ...Array.from(room.remoteParticipants.values()),
+                ...Array.from(room.remoteParticipants.values()).sort(
+                    (a, b) => a.identity.localeCompare(b.identity),
+                ),
             ]);
         };
 
+        const events: ParticipantEvent[] = [
+            ParticipantEvent.IsSpeakingChanged,
+            ParticipantEvent.TrackMuted,
+            ParticipantEvent.TrackUnmuted,
+            ParticipantEvent.TrackPublished,
+            ParticipantEvent.TrackUnpublished,
+            ParticipantEvent.TrackSubscribed,
+            ParticipantEvent.TrackUnsubscribed,
+            ParticipantEvent.LocalTrackPublished,
+            ParticipantEvent.LocalTrackUnpublished,
+            ParticipantEvent.ParticipantNameChanged,
+            ParticipantEvent.ParticipantMetadataChanged,
+            ParticipantEvent.AttributesChanged,
+        ];
+
+        const subscribe = (p: Participant) => {
+            if (subscribed.has(p)) return;
+            subscribed.add(p);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            events.forEach((e: any) => p.on(e, update));
+        };
+
+        const unsubscribe = (p: Participant) => {
+            if (!subscribed.has(p)) return;
+            subscribed.delete(p);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            events.forEach((e: any) => p.off(e, update));
+        };
+
+        subscribe(room.localParticipant);
+        room.remoteParticipants.forEach(subscribe);
+
+        const onConnected = (p: Participant) => {
+            subscribe(p);
+            update();
+        };
+        const onDisconnected = (p: Participant) => {
+            unsubscribe(p);
+            update();
+        };
+
+        room.on(RoomEvent.ParticipantConnected, onConnected);
+        room.on(RoomEvent.ParticipantDisconnected, onDisconnected);
+        room.on(RoomEvent.ActiveSpeakersChanged, update);
+
         update();
 
-        room.on(RoomEvent.ParticipantConnected, update);
-        room.on(RoomEvent.ParticipantDisconnected, update);
-        room.on(RoomEvent.ActiveSpeakersChanged, update);
-        room.on(RoomEvent.TrackMuted, update);
-        room.on(RoomEvent.TrackUnmuted, update);
-        room.on(RoomEvent.Connected, update);
-
         return () => {
-            room.off(RoomEvent.ParticipantConnected, update);
-            room.off(RoomEvent.ParticipantDisconnected, update);
+            subscribed.forEach((p) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                events.forEach((e: any) => p.off(e, update));
+            });
+            subscribed.clear();
+            room.off(RoomEvent.ParticipantConnected, onConnected);
+            room.off(RoomEvent.ParticipantDisconnected, onDisconnected);
             room.off(RoomEvent.ActiveSpeakersChanged, update);
-            room.off(RoomEvent.TrackMuted, update);
-            room.off(RoomEvent.TrackUnmuted, update);
-            room.off(RoomEvent.Connected, update);
         };
     }, [active, room]);
 
     return (
-        <div>
-            <button
-                onClick={onClick}
-                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded mt-1 ${
-                    active
-                        ? 'bg-white/10 text-white'
-                        : 'hover:bg-white/5 text-gray-400'
-                }`}
-            >
-                <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
-                    />
-                </svg>
-                {name}
-            </button>
-
-            {active && participants.length > 0 && (
-                <ul className="ml-6 mt-0.5 space-y-0.5">
-                    {participants.map((p) => (
-                        <li
-                            key={p.identity}
-                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-white/5 text-sm text-gray-300"
-                        >
-                            <div
-                                className={`w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-xs text-white font-semibold ring-2 transition ${
-                                    p.isSpeaking ? 'ring-green-500' : 'ring-transparent'
-                                }`}
-                            >
-                                {(p.name || p.identity)[0]?.toUpperCase()}
-                            </div>
-                            <span className="truncate flex-1">{p.name || p.identity}</span>
-
-                            {!p.isMicrophoneEnabled && (
-                                <span> 🔇 </span>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </div>
+        <ButtonComponent
+            onClick={onClick}
+            active={active}
+            name={name}
+            participants={participants}
+            isMicOn={isMicOn}
+        />
     );
 }
 
