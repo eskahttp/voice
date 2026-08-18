@@ -14,7 +14,7 @@ function CreateComponent({SetNothing,UpText
                              ,button,input,
                              FNServer,JoinServer}: Props){
     return (<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-        <div className="w-full max-w-md rounded-lg bg-[#313338] shadow-2xl">
+        <div className="w-full max-w-md rounded-lg bg-[#0d0d0f] shadow-2xl">
             <div className="relative px-6 pt-6 pb-4 text-center">
                 <button
                     onClick={SetNothing}
@@ -45,10 +45,10 @@ function CreateComponent({SetNothing,UpText
                     />
                 </div>
 
-                <div className="-mx-6 -mb-6 flex justify-end rounded-b-lg bg-[#2b2d31] px-6 py-4">
+                <div className="-mx-6 -mb-6 flex rounded-b-lg bg-[#0d0d0f] px-6 py-4">
                     <button
                         type="submit"
-                        className="rounded-md bg-indigo-500 px-6 py-2 text-sm font-medium text-white transition hover:bg-indigo-600"
+                        className="rounded-md bg-gradient-to-r from-teal-500 to-cyan-600 w-full py-2 text-sm font-medium text-white transition hover:shadow-[inset_0_10px_15px_-5px_rgba(0,0,0,0.25),inset_0_-10px_15px_-5px_rgba(0,0,0,0.25)] text-white text-sm font-medium cursor-pointer transition-all duration-350"
                     >
                         {button}
                     </button>

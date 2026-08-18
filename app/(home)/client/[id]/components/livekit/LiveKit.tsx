@@ -31,6 +31,20 @@ function RoomBridge({ onRoomConnected }: { onRoomConnected?: (r: Room) => void }
 
 export default function RoomPage({ Nickname, room, onLeave, onRoomConnected }: Props) {
     const [token, setToken] = useState<string>('');
+    const [micEnabled, setMicEnabled] = useState<boolean>(true);
+
+    useEffect(() => {
+        try{
+            const saved = localStorage.getItem("micEnabled");
+            if (saved !== null) {
+                setMicEnabled(JSON.parse(saved));
+            }
+        }
+        catch (e){
+            console.error(e);
+            setMicEnabled(true);
+        }
+    }, []);
 
     useEffect(() => {
         (async () => {
@@ -54,7 +68,7 @@ export default function RoomPage({ Nickname, room, onLeave, onRoomConnected }: P
             serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
             connect={true}
             video={false}
-            audio={true}
+            audio={micEnabled}
             onDisconnected={onLeave}
             data-lk-theme="default"
             style={{ height: '100%', width: '100%' }}
