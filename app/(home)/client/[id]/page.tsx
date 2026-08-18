@@ -26,7 +26,8 @@ async function Page({ params }: Props) {
     return (
         CheckUOnS === 'Yes' ?
     <ServerPage
-        name={serverName}
+        referal={serverName.referal}
+        name={serverName.name}
         channels={channels}
         nickname={nickname}
         RightPage={
@@ -37,7 +38,7 @@ async function Page({ params }: Props) {
                 GetMessage={GetMessage}
             />}
     /> : <ServerModal
-                serverName={serverName}
+                serverName={serverName.name}
                 ServerId={id}
             />
  );
