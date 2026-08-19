@@ -1,0 +1,77 @@
+name: voice
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    restart: unless-stopped
+    # Real client IPs (app/lib/get-client-ip.ts) + loopback access to upstreams.
+    network_mode: host
+    environment:
+      # Caddy's {$ACME_CA:default} treats set-but-empty as set, so the
+      # production fallback must happen here, not in the Caddyfile.
+      ACME_CA: ${ACME_CA:-https://acme-v02.api.letsencrypt.org/directory}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data # certs: persist to not hit Let's Encrypt rate limits
+      - caddy_config:/config
+    depends_on:
+      - nextjs
+
+  livekit:
+    image: livekit/livekit-server:v1.13
+    container_name: livekit
+    restart: unless-stopped
+    # Publishing the UDP range would spawn ~200 docker-proxy processes (~950MB).
+    network_mode: host
+    command: --config /etc/livekit.yaml
+    volumes:
+      - ./livekit/livekit.prod.yaml:/etc/livekit.yaml:ro
+    environment:
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
+
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_LIVEKIT_URL: ${NEXT_PUBLIC_LIVEKIT_URL}
+    image: voice-nextjs
+    container_name: nextjs
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+      DATABASE_URL: postgres://voice:${POSTGRES_PASSWORD}@db:5432/voice
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: voice
+      POSTGRES_USER: voice
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}
+    volumes:
+      - pgdata:/var/lib/postgresql/data # the image's PGDATA; not /var/lib/postgresql
+    healthcheck:
+      # server.mjs migrates on boot, so nextjs must not start first.
+      test: ["CMD-SHELL", "pg_isready -U voice -d voice"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    ports:
+      - "127.0.0.1:5432:5432" # SSH tunnel target; see DEPLOY.md
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
