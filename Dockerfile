@@ -46,6 +46,14 @@ COPY . .
 
 ENV NODE_ENV=production
 
+# Inlined into the client bundle by `next build`: must be set at build time.
+ARG NEXT_PUBLIC_LIVEKIT_URL
+ENV NEXT_PUBLIC_LIVEKIT_URL=$NEXT_PUBLIC_LIVEKIT_URL
+
+# Placeholder, never connected to: app/lib/db.ts demands a value at build time.
+ARG DATABASE_URL=postgres://build:build@localhost:5432/build
+ENV DATABASE_URL=$DATABASE_URL
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
@@ -66,6 +74,10 @@ RUN if [ -f package-lock.json ]; then \
   else \
     echo "No lockfile found." && exit 1; \
   fi
+
+# server.mjs is a custom server, so output tracing cannot replace the full
+# node_modules copied below; prune trims it instead.
+RUN npm prune --omit=dev
 
 # ============================================
 # Stage 3: Run Next.js application
@@ -90,8 +102,7 @@ ENV HOSTNAME="0.0.0.0"
 COPY --from=builder --chown=node:node /app/public ./public
 
 # Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown node:node .next
+RUN mkdir .next && chown node:node .next
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing

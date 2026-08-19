@@ -1,0 +1,48 @@
+# Requires two repository secrets (setup steps in DEPLOY.md):
+#   DEPLOY_SSH_KEY      private half of a dedicated ed25519 deploy key
+#   DEPLOY_KNOWN_HOSTS  output of: ssh-keyscan 195.72.61.232
+
+name: deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+env:
+  DEPLOY_HOST: root@195.72.61.232
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Ship the tree
+        run: |
+          tar cf - --exclude=.git . \
+            | ssh "$DEPLOY_HOST" 'mkdir -p /opt/voice && tar xf - -C /opt/voice'
+
+      - name: Build and restart
+        run: |
+          ssh "$DEPLOY_HOST" 'cd /opt/voice \
+            && docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build'
+
+      - name: Smoke test
+        run: |
+          curl --retry 12 --retry-delay 5 --retry-all-errors -fsSI https://dianavoice.online > /dev/null
+          curl -fsS 'https://dianavoice.online/socket.io/?EIO=4&transport=polling' > /dev/null
+          # LiveKit answering at all (even 4xx) proves the /rtc route; only 5xx/unreachable fails.
+          code=$(curl -s -o /dev/null -w '%{http_code}' https://dianavoice.online/rtc/validate)
+          echo "/rtc/validate -> $code"
+          [ "$code" -lt 500 ]

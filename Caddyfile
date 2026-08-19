@@ -1,0 +1,20 @@
+{
+	email admin@dianavoice.online
+
+	acme_ca {$ACME_CA:https://acme-v02.api.letsencrypt.org/directory}
+}
+
+www.dianavoice.online {
+	redir https://dianavoice.online{uri} permanent
+}
+
+dianavoice.online {
+	encode zstd gzip
+
+	header Strict-Transport-Security "max-age=15552000"
+
+	@livekit path /rtc* /twirp/*
+	reverse_proxy @livekit 127.0.0.1:7880
+
+	reverse_proxy 127.0.0.1:3000
+}

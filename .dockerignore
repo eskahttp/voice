@@ -1,0 +1,27 @@
+# node_modules must stay excluded: COPY . . would overwrite the image's
+# linux-x64 packages with the host's.
+node_modules
+.next
+out
+
+.env
+.env.*
+!.env.production.example
+
+.git
+.gitignore
+.github
+.claude
+.idea
+.vscode
+
+Dockerfile
+.dockerignore
+docker-compose*.yml
+Caddyfile
+README.md
+DEPLOY.md
+AGENTS.md
+CLAUDE.md
+npm-debug.log*
+*.log
