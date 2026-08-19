@@ -79,6 +79,21 @@ psql "postgres://voice:<POSTGRES_PASSWORD>@127.0.0.1:15432/voice"
 
 One-offs: `ssh root@195.72.61.232 'docker exec -it postgres psql -U voice -d voice'`
 
+## Automatic deploy (GitHub Actions)
+
+`.github/workflows/deploy.yml` ships the tree over SSH, rebuilds, and
+smoke-tests the public endpoints on every push to `main`.
+
+One-time setup via developer machine, before first Actions run:
+
+```bash
+ssh-keygen -t ed25519 -f deploy_key -N '' -C 'github-actions deploy'
+ssh root@195.72.61.232 'cat >> ~/.ssh/authorized_keys' < deploy_key.pub
+gh secret set DEPLOY_SSH_KEY < deploy_key
+ssh-keyscan 195.72.61.232 2>/dev/null | gh secret set DEPLOY_KNOWN_HOSTS
+rm deploy_key deploy_key.pub
+```
+
 ---
 
 # Развёртывание dianavoice.online
@@ -161,3 +176,18 @@ psql "postgres://voice:<POSTGRES_PASSWORD>@127.0.0.1:15432/voice"
 ```
 
 Разовые запросы: `ssh root@195.72.61.232 'docker exec -it postgres psql -U voice -d voice'`
+
+## Автодеплой (GitHub Actions)
+
+`.github/workflows/deploy.yml` при каждом пуше в `main` копирует код по SSH,
+пересобирает контейнеры и проверяет публичные эндпоинты.
+
+Разовая настройка с машины разработчика, до первого запуска Actions:
+
+```bash
+ssh-keygen -t ed25519 -f deploy_key -N '' -C 'github-actions deploy'
+ssh root@195.72.61.232 'cat >> ~/.ssh/authorized_keys' < deploy_key.pub
+gh secret set DEPLOY_SSH_KEY < deploy_key
+ssh-keyscan 195.72.61.232 2>/dev/null | gh secret set DEPLOY_KNOWN_HOSTS
+rm deploy_key deploy_key.pub
+```
