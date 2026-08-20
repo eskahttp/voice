@@ -2,7 +2,6 @@
 
 import { ReactNode, useState } from 'react';
 import ButtonChannel from '@/app/(home)/client/[id]/components/Channels/ButtonChanel';
-import RoomPage from '@/app/(home)/client/[id]/components/livekit/LiveKit';
 import { useVoice } from '@/app/(home)/client/[id]/context/VoiceContext';
 import ServerMenu from "@/app/(home)/client/[id]/components/RightPage/ServerPageMenu/ServerPageMenu";
 
@@ -19,10 +18,8 @@ interface Props {
     referal: string;
 }
 
-function ServerPage({ name, channels, nickname, RightPage, referal }: Props) {
-    const {
-        room, setRoom, activeRoomId, setActiveRoomId, setActiveRoomName,} = useVoice();
-
+function ServerPage({ name, channels, RightPage, referal }: Props) {
+    const { room, activeRoomId, setActiveRoomId, setActiveRoomName } = useVoice();
     const [menuOpen, setMenuOpen] = useState(false);
 
     const handleChannelClick = (ch: Channel) => {
@@ -36,7 +33,7 @@ function ServerPage({ name, channels, nickname, RightPage, referal }: Props) {
                 <div className="relative">
                     <div className="flex items-center justify-between px-4 py-3 border-b border-[#232428] shadow-sm">
                         <button
-                            onClick={() => setMenuOpen((v) =>  !v)}
+                            onClick={() => setMenuOpen((v) => !v)}
                             className="inline-flex items-center gap-1 font-semibold text-white px-2 py-1 rounded-md cursor-pointer hover:bg-white/10 transition-colors focus:outline-none"
                         >
                             {name}
@@ -89,29 +86,6 @@ function ServerPage({ name, channels, nickname, RightPage, referal }: Props) {
 
             <main className="flex-1 flex flex-col">
                 <div className="flex-1">{RightPage}</div>
-
-                {activeRoomId && (
-                    <div
-                        style={{
-                            position: 'absolute',
-                            width: 0,
-                            height: 0,
-                            overflow: 'hidden',
-                        }}
-                    >
-                        <RoomPage
-                            key={activeRoomId}
-                            Nickname={nickname}
-                            room={activeRoomId}
-                            onLeave={() => {
-                                setActiveRoomId(null);
-                                setActiveRoomName(null);
-                                setRoom(null);
-                            }}
-                            onRoomConnected={(r) => setRoom(r)}
-                        />
-                    </div>
-                )}
             </main>
         </div>
     );
