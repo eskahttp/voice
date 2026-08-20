@@ -4,6 +4,9 @@ import { JSX, useEffect, useState } from "react";
 import { RoomEvent } from 'livekit-client';
 import {useVoice} from "@/app/(home)/client/[id]/context/VoiceContext";
 import AccountComponent from "@/app/global/account/components/AccountComponent/AccountComponent";
+
+const audio = new Audio("/audio/minecraft-click_DeZnoGEf.mp3");
+
 interface Props {
     Nickname: string;
 }
@@ -57,15 +60,17 @@ function AccountInfo({ Nickname }: Props): JSX.Element {
             setMicEnabled((prev) => {
                 const next = !prev;
                 try{
+                    audio.play();
                     localStorage.setItem("micEnabled", JSON.stringify(next));
                     return next;
                 }
                 catch (e){
+                    audio.play();
                     console.error(e);
                     return true
                 }
             });
-            return;
+            return
         }
 
         const currentlyEnabled = room.localParticipant.isMicrophoneEnabled;

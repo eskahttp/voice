@@ -1,4 +1,5 @@
 import { Room } from 'livekit-client';
+const audio = new Audio("/audio/minecraft-click_DeZnoGEf.mp3");
 
 interface Props {
     Nickname: string,
@@ -13,6 +14,8 @@ function AccountComponent({
                               Nickname, activeRoomId, activeRoomName,
                               toggleMic, room, micEnabled
                           }: Props) {
+
+
     return (
         <div className="w-full p-2">
             <div className="flex items-center gap-1 px-2 py-2 bg-[#121212] rounded-xl shadow-lg border border-gray-500">
