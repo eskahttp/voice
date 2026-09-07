@@ -5,11 +5,11 @@ import path from 'node:path';
 import next from 'next';
 import { Server } from 'socket.io';
 import { runner } from 'node-pg-migrate';
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 import fs from 'fs';
 
 if (fs.existsSync('.env.local')) {
-    dotenv.config({path: '.env.local'})
+    dotenv.config({ path: '.env.local' });
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -22,7 +22,6 @@ if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not set');
 }
 
-// Run migrations before starting the server
 await runner({
     databaseUrl: process.env.DATABASE_URL,
     dir: path.join(__dirname, 'migrations'),
@@ -46,10 +45,16 @@ const io = new Server(httpServer, {
 
 io.on('connection', (socket) => {
     socket.on('joinRoom', (serverId) => socket.join(serverId));
+
     socket.on('message', ({ serverId, ...msg }) => {
         io.to(serverId).emit('message', msg);
     });
+
     socket.on('leaveRoom', (serverId) => socket.leave(serverId));
+
+    socket.on('userJoinedServer', ({ serverId, user }) => {
+        io.to(serverId).emit('userJoined', user);
+    });
 });
 
 httpServer.listen(port, () => {

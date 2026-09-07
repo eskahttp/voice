@@ -20,7 +20,7 @@ interface Props {
 
 function ServerPage({ name, channels, RightPage, referal }: Props) {
     const { room, activeRoomId, setActiveRoomId, setActiveRoomName } = useVoice();
-    const [menuOpen, setMenuOpen] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false); 
 
     const handleChannelClick = (ch: Channel) => {
         setActiveRoomId(ch.id);
