@@ -1,17 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, {useActionState, useState} from 'react';
+import {AddFriendAction} from "@/app/(home)/client/pageComponent/RightBarComponent/AddFriendAction/AddFriendAction";
+
+type ColorInputt = 'red' | 'green' | 'none'
 
 const AddFriend: React.FC = () => {
     const [username, setUsername] = useState<string>('');
+    const [active, setActive] = useState<ColorInputt>('none'); // Set the color based on the text.
+    const [AddFriendState, formAddFriend] = useActionState(AddFriendAction, {message: ''})
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit : () => void = () => {
         if (username.trim()) {
-            console.log('Sending friend request to:', username);
             setUsername('');
         }
     };
+
+    const border = ()=> {
+        return 'border-red-500'
+    }
 
     const isActive = username.trim().length > 0;
 
@@ -25,14 +32,15 @@ const AddFriend: React.FC = () => {
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="mt-6">
-                    <div className="flex items-center bg-[#1e1f22] rounded-lg p-1.5 border border-transparent focus-within:border-indigo-500 transition-colors">
+                <form action={formAddFriend} onSubmit={handleSubmit} className="mt-6">
+                    <div className='flex items-center bg-[#1e1f22] rounded-lg p-1.5 border border-transparent focus-within:border-indigo-500 transition-colors'>
                         <input
                             type="text"
                             value={username}
+                            name='FriendLogin'
                             onChange={(e) => setUsername(e.target.value)}
                             placeholder="Enter a username"
-                            className="flex-1 min-w-0 bg-transparent outline-none text-zinc-200 px-3 py-2.5 text-base"
+                            className='flex-1 min-w-0 bg-transparent outline-none text-zinc-200 px-3 py-2.5 text-base'
                         />
                         <button
                             type="submit"
@@ -47,6 +55,7 @@ const AddFriend: React.FC = () => {
                         </button>
                     </div>
                 </form>
+                <p className="text-green-500">{AddFriendState.message}</p>
             </div>
         </div>
     );
