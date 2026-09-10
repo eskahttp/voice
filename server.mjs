@@ -7,6 +7,14 @@ import { Server } from 'socket.io';
 import { runner } from 'node-pg-migrate';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import { Pool } from 'pg';
+import {getCookie} from "./getCookie.js";
+
+const pool = new Pool({
+    password: 'root',
+    user: 'postgres',
+    database: 'Voice'
+});
 
 if (fs.existsSync('.env.local')) {
     dotenv.config({ path: '.env.local' });
@@ -39,11 +47,59 @@ await app.prepare();
 
 const httpServer = createServer(handler);
 
-const io = new Server(httpServer, {
-    cors: { origin: '*' },
-});
+const io = new Server(httpServer)
 
-io.on('connection', (socket) => {
+const onlineUsers = new Map();
+
+io.on('connection', async (socket) => {
+    const token = getCookie(socket.handshake.headers.cookie, 'sessionToken');
+
+    if (!token) return socket.disconnect();
+
+
+    const { rows } = await pool.query(
+        `SELECT u.id, u.login, u.nickname 
+         FROM session s 
+         JOIN users u ON u.id = s.login_id 
+         WHERE s.cookie = $1`,
+        [token]
+    );
+    if (rows.length === 0) return socket.disconnect();
+
+    const user = rows[0];
+    socket.data.user = user;
+
+    const userId = user.id;
+
+    if(!onlineUsers.has(userId)) {
+        onlineUsers.set(userId, new Set());
+    }
+    onlineUsers.get(userId).add(socket.id);
+
+    socket.on('sendFriendRequest', async (login) => {
+        try {
+            if (typeof login !== 'string' || login.length === 0 || login.length > 50) return;
+
+            const { rows } = await pool.query(
+                `SELECT id FROM users WHERE login = $1`,
+                [login]
+            );
+            if (rows.length === 0) return;
+
+            const targetId = rows[0].id;
+            const targetSockets = onlineUsers.get(targetId);
+            if (!targetSockets) return;
+
+            io.to([...targetSockets]).emit('friendRequestReceived', {
+                id: socket.data.user.id,
+                login: socket.data.user.login,
+                nickname: socket.data.user.nickname,
+            });
+        } catch (err) {
+            console.error('sendFriendRequest error:', err);
+        }
+    });
+
     socket.on('joinRoom', (serverId) => socket.join(serverId));
 
     socket.on('message', ({ serverId, ...msg }) => {
@@ -54,6 +110,17 @@ io.on('connection', (socket) => {
 
     socket.on('userJoinedServer', ({ serverId, user }) => {
         io.to(serverId).emit('userJoined', user);
+    });
+
+    socket.on('disconnect', () => {
+        const userSockets = onlineUsers.get(userId);
+        if (!userSockets) return;
+
+        userSockets.delete(socket.id);
+
+        if (userSockets.size === 0) {
+            onlineUsers.delete(userId);
+        }
     });
 });
 

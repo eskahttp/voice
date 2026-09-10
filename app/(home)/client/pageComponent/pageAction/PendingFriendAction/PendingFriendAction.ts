@@ -14,7 +14,7 @@ export async function CheckPendingFriend(){
 
     if (UserId.rows.length === 0) redirect('/login');
 
-    const PendingFriend = await pool.query('SELECT users.nickname FROM friendships ' +
+    const PendingFriend = await pool.query('SELECT users.nickname,users.id,users.login FROM friendships ' +
         'JOIN users ON friendships.requester_id = users.id WHERE addressee_id = $1',[UserId.rows[0].login_id])
 
     return PendingFriend.rows

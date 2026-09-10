@@ -2,6 +2,7 @@
 
 import React, {useActionState, useState} from 'react';
 import {AddFriendAction} from "@/app/(home)/client/pageComponent/RightBarComponent/AddFriendAction/AddFriendAction";
+import {useSocket} from "@/app/CustomHooks/socket";
 
 type ColorInputt = 'red' | 'green' | 'none'
 
@@ -10,10 +11,12 @@ const AddFriend: React.FC = () => {
     const [active, setActive] = useState<ColorInputt>('none'); // Set the color based on the text.
     const [AddFriendState, formAddFriend] = useActionState(AddFriendAction, {message: ''})
 
+    const socket = useSocket();
+
     const handleSubmit : () => void = () => {
-        if (username.trim()) {
-            setUsername('');
-        }
+        if (!socket) return setUsername('');
+        socket.emit('sendFriendRequest', username);
+        setUsername('');
     };
 
     const border = ()=> {
