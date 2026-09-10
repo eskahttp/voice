@@ -1,5 +1,5 @@
 import { Room } from 'livekit-client';
-const audio = new Audio("/audio/minecraft-click_DeZnoGEf.mp3");
+import {useSocket} from "@/app/CustomHooks/socket";
 
 interface Props {
     Nickname: string,
@@ -14,6 +14,8 @@ function AccountComponent({
                               Nickname, activeRoomId, activeRoomName,
                               toggleMic, room, micEnabled
                           }: Props) {
+
+    const socket = useSocket();
 
 
     return (

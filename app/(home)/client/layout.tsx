@@ -20,10 +20,10 @@ export default async function NewLayout({
 
     return (
         <VoiceProvider>
-            <div className="overflow-hidden">
+            <div className="h-screen w-screen overflow-hidden">
                 <LeftBar />
                 <AccountInfo Nickname={Nickname} />
-                <div className="ml-[72px] h-screen overflow-hidden">
+                <div className="ml-[72px] h-screen w-[calc(100vw-72px)] overflow-hidden">
                     {children}
                 </div>
                 <VoiceConnection Nickname={Nickname} />

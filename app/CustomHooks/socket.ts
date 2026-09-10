@@ -9,7 +9,9 @@ export function useSocket() {
 
     useEffect(() => {
         if (!socket) {
-            socket = io();
+            socket = io({
+                withCredentials: true,
+            });
         }
         setInstance(socket);
     }, []);
