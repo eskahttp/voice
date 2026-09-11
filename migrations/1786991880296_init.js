@@ -105,6 +105,30 @@ export const up = (pgm) => {
 
     pgm.createIndex('friendships', 'requester_id', { name: 'idx_friendships_requester' });
     pgm.createIndex('friendships', 'addressee_id', { name: 'idx_friendships_addressee' });
+    pgm.createTable('friends', {
+        user_id1: {
+            type: 'integer',
+            notNull: true,
+            references: '"users"',
+            onDelete: 'CASCADE',
+        },
+        user_id2: {
+            type: 'integer',
+            notNull: true,
+            references: '"users"',
+            onDelete: 'CASCADE',
+        },
+        created_at: {
+            type: 'timestamp',
+            notNull: true,
+            default: pgm.func('current_timestamp'),
+        },
+    }, { ifNotExists: true });
+    pgm.addConstraint('friends', 'friends_pkey', {
+        primaryKey: ['user_id1', 'user_id2'],
+    });
+    pgm.addConstraint('friends', 'ordered_pair', 'CHECK (user_id1 < user_id2)');
+    pgm.createIndex('friends', 'user_id2', { name: 'idx_friends_user2' });
 };
 
 /**

@@ -1,6 +1,6 @@
 import LeftBarClient from "@/app/(home)/client/pageComponent/LeftBar";
 import RightBarClient from "@/app/(home)/client/pageComponent/RightBar";
-import {CheckPendingFriend} from "@/app/(home)/client/pageComponent/pageAction/PendingFriendAction/PendingFriendAction";
+import {CheckPendingFriend} from "@/app/(home)/client/pageComponent/pageAction/PendingFriendAction/SelectPendingFriend";
 
 
 async function PageClient(){
