@@ -1,7 +1,7 @@
 'use client';
 
-import {useSocket} from "@/app/CustomHooks/socket";
-import {useEffect, useState} from "react";
+import {AddOrNotFriend} from "@/app/(home)/client/pageComponent/pageAction/PendingFriendAction/AddOrIgnoreFriend";
+import {useState} from "react";
 
 interface ArrFriend {
     id: number;
@@ -11,9 +11,10 @@ interface ArrFriend {
 
 interface Props {
     ArrPending: ArrFriend[];
+    handleAddOrNot: (AccOrIgn: boolean, PendingId: number) => void;
 }
 
-function PendingFriend({ ArrPending }: Props) {
+function PendingFriend({ ArrPending, handleAddOrNot }: Props) {
 
     return (
         <div className="flex-1 min-w-0 overflow-y-auto px-8 py-4">
@@ -55,14 +56,16 @@ function PendingFriend({ ArrPending }: Props) {
                         </div>
 
                         <div className="flex items-center gap-2 shrink-0">
-                            <button className="group/accept relative w-11 h-11 flex items-center justify-center rounded-full bg-neutral-900 border border-neutral-700 hover:border-green-500 transition-colors hover:text-green-500">
+                            <button onClick={() => handleAddOrNot(true,friend.id)}
+                                className="group/accept relative w-11 h-11 flex items-center justify-center rounded-full bg-neutral-900 border border-neutral-700 hover:border-green-500 transition-colors hover:text-green-500">
                                 <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs text-white bg-neutral-800 rounded opacity-0 group-hover/accept:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                                     Accept
                                 </span>
                                 ✓
                             </button>
 
-                            <button className="group/ignore relative w-11 h-11 flex items-center justify-center rounded-full bg-neutral-900 border border-neutral-700 hover:border-red-500 transition-colors hover:text-red-500">
+                            <button onClick={() => handleAddOrNot(false,friend.id)}
+                                className="group/ignore relative w-11 h-11 flex items-center justify-center rounded-full bg-neutral-900 border border-neutral-700 hover:border-red-500 transition-colors hover:text-red-500">
                                 <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs text-white bg-neutral-800 rounded opacity-0 group-hover/ignore:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                                     Ignore
                                 </span>

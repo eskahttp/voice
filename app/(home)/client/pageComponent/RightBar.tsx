@@ -5,6 +5,7 @@ import AddFriend from "@/app/(home)/client/pageComponent/RightBarComponent/AddFr
 import FriendsList from "@/app/(home)/client/pageComponent/RightBarComponent/FriendsList";
 import PendingFriend from "@/app/(home)/client/pageComponent/RightBarComponent/PendingFriend";
 import {useSocket} from "@/app/CustomHooks/socket";
+import {AddOrNotFriend} from "@/app/(home)/client/pageComponent/pageAction/PendingFriendAction/AddOrIgnoreFriend";
 
 interface ArrFriend {
     id: number;
@@ -32,9 +33,16 @@ function RightBarClient({ArrPending}: Props){
 
     }, [socket]);
 
+    const handleAddOrNot = async (AccOrIgn: boolean, PendingId: number)=>{
+        await AddOrNotFriend(AccOrIgn,PendingId)
+        setAllPending(AllPending.filter((friend) => friend.id !== PendingId));
+    }
+
     const FilteredComponent: () => ReactNode = () => {
         if (filter === 'add') return <AddFriend />;
-        if (filter === 'pending') return <PendingFriend ArrPending={AllPending} />
+        if (filter === 'pending') return <PendingFriend
+                                            handleAddOrNot={handleAddOrNot}
+                                            ArrPending={AllPending} />
         else return <FriendsList/>
     }
 

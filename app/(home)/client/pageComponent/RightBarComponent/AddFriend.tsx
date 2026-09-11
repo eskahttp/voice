@@ -1,29 +1,48 @@
 'use client';
 
-import React, {useActionState, useState} from 'react';
+import React, { useState } from 'react';
 import {AddFriendAction} from "@/app/(home)/client/pageComponent/RightBarComponent/AddFriendAction/AddFriendAction";
 import {useSocket} from "@/app/CustomHooks/socket";
 
-type ColorInputt = 'red' | 'green' | 'none'
+type ColorInput = 'red' | 'green' | 'none'
+
+interface ActionReq{
+    message: string
+    color: ColorInput
+    checkIt: boolean
+}
 
 const AddFriend: React.FC = () => {
     const [username, setUsername] = useState<string>('');
-    const [active, setActive] = useState<ColorInputt>('none'); // Set the color based on the text.
-    const [AddFriendState, formAddFriend] = useActionState(AddFriendAction, {message: ''})
+    const [AddFriendState, setAddFriendState] = useState<ActionReq>({message: '', color: 'none', checkIt: false})
 
     const socket = useSocket();
 
-    const handleSubmit : () => void = () => {
-        if (!socket) return setUsername('');
-        socket.emit('sendFriendRequest', username);
+    const handleSubmit : (formData: FormData) => Promise<void> = async (formData: FormData) : Promise<void> => {
+        const MesAndColor = await AddFriendAction(formData) as ActionReq;
+        setAddFriendState(MesAndColor);
         setUsername('');
+
+        if (MesAndColor.checkIt) {
+            if (!socket) return setUsername('');
+            socket.emit('sendFriendRequest', username);
+            setUsername('');
+        }
     };
 
-    const border = ()=> {
-        return 'border-red-500'
-    }
-
     const isActive = username.trim().length > 0;
+
+    const getBorderClass = () => {
+        if (AddFriendState.color === 'green') return 'border-green-500 focus-within:border-green-500';
+        if (AddFriendState.color === 'red') return 'border-red-500 focus-within:border-red-500';
+
+        return 'border-transparent focus-within:border-indigo-500';
+    };
+
+    const getMessageColor = () => {
+        if (AddFriendState.color === 'green') return 'text-green-500';
+        if (AddFriendState.color === 'red') return 'text-red-500';
+    };
 
     return (
         <div className="flex-1 overflow-y-auto px-8 py-6">
@@ -35,13 +54,18 @@ const AddFriend: React.FC = () => {
                     </p>
                 </div>
 
-                <form action={formAddFriend} onSubmit={handleSubmit} className="mt-6">
-                    <div className='flex items-center bg-[#1e1f22] rounded-lg p-1.5 border border-transparent focus-within:border-indigo-500 transition-colors'>
+                <form action={handleSubmit} className="mt-6">
+                    <div className={`flex items-center bg-[#1e1f22] rounded-lg p-1.5 border transition-colors ${getBorderClass()}`}>
                         <input
                             type="text"
                             value={username}
                             name='FriendLogin'
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={(e) => {
+                                setUsername(e.target.value);
+                                if (AddFriendState.color !== 'none') {
+                                    setAddFriendState({message: '', color: 'none', checkIt: false});
+                                }
+                            }}
                             placeholder="Enter a username"
                             className='flex-1 min-w-0 bg-transparent outline-none text-zinc-200 px-3 py-2.5 text-base'
                         />
@@ -58,7 +82,7 @@ const AddFriend: React.FC = () => {
                         </button>
                     </div>
                 </form>
-                <p className="text-green-500">{AddFriendState.message}</p>
+                {AddFriendState.message && <p className={`mt-2 text-sm ${getMessageColor()}`}>{AddFriendState.message}</p>}
             </div>
         </div>
     );
