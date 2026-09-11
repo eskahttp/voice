@@ -10,12 +10,6 @@ import fs from 'fs';
 import { Pool } from 'pg';
 import {getCookie} from "./getCookie.js";
 
-const pool = new Pool({
-    password: 'root',
-    user: 'postgres',
-    database: 'Voice'
-});
-
 if (fs.existsSync('.env.local')) {
     dotenv.config({ path: '.env.local' });
 }
@@ -26,12 +20,17 @@ const dev = process.env.NODE_ENV !== 'production';
 const hostname = process.env.HOSTNAME || 'localhost';
 const port = Number(process.env.PORT) || 3000;
 
-if (!process.env.DATABASE_URL) {
+const databaseUrl = process.env.DATABASE_URL
+    ?? (dev ? 'postgres://postgres:root@localhost:5432/Voice' : undefined);
+
+if (!databaseUrl) {
     throw new Error('DATABASE_URL is not set');
 }
 
+const pool = new Pool({ connectionString: databaseUrl });
+
 await runner({
-    databaseUrl: process.env.DATABASE_URL,
+    databaseUrl,
     dir: path.join(__dirname, 'migrations'),
     migrationsTable: 'pgmigrations',
     direction: 'up',
