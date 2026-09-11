@@ -1,6 +1,4 @@
-interface Props {}
-
-function LeftBarClient({}: Props){
+function LeftBarClient(){
     return (<div className="w-72 bg-[#0b0b0d] flex flex-col border-r border-[#232428]">
         <div className="h-12 flex items-center px-2 border-b border-[#232428] shrink-0">
             <button className="w-full h-8 bg-[#1e1f22] rounded text-sm text-gray-300 hover:text-white px-2 text-center">
