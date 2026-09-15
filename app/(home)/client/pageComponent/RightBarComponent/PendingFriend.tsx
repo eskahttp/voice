@@ -1,8 +1,5 @@
 'use client';
 
-import {AddOrNotFriend} from "@/app/(home)/client/pageComponent/pageAction/PendingFriendAction/AddOrIgnoreFriend";
-import {useState} from "react";
-
 interface ArrFriend {
     id: number;
     nickname: string;

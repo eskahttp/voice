@@ -16,6 +16,7 @@ function AccountComponent({
                           }: Props) {
 
     const socket = useSocket();
+    if (!socket) return null;
 
 
     return (

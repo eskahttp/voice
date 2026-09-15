@@ -1,7 +1,5 @@
 'use client';
 
-import {useState} from "react";
-
 interface FriendsArr {
     id: number;
     nickname: string;
@@ -9,12 +7,11 @@ interface FriendsArr {
 }
 
 interface Props {
-    FriendsArr: FriendsArr[]
+    FriendsArr: FriendsArr[];
+    isOnlineList?: boolean;
 }
 
-function FriendsList({FriendsArr}: Props){
-    const [friend, setFriend] = useState<FriendsArr[]>(FriendsArr)
-
+function FriendsList({FriendsArr, isOnlineList}: Props){
 
     return (<div className="flex-1 overflow-y-auto px-8 py-4">
         <div className="relative mb-6">
@@ -31,12 +28,12 @@ function FriendsList({FriendsArr}: Props){
         </div>
 
         <div className="text-xs font-semibold text-gray-300 uppercase tracking-wide mb-3">
-            Online — {friend.length}
+            {isOnlineList ? 'Online' : 'All Friends'} — {FriendsArr.length}
         </div>
 
         <div className="border-t border-[#232428]" />
 
-        {friend.map((friend) => (
+        {FriendsArr.map((friend) => (
             <div
                 key={friend.id}
                 className="group flex items-center justify-between py-3 border-b border-[#232428] hover:bg-[#1a1b1e] px-2 rounded-md transition">

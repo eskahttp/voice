@@ -21,6 +21,9 @@ export async function AddOrNotFriend(AccOrIgn: boolean, PendingId: number){
             'VALUES (LEAST($1::bigint, $2::bigint), GREATEST($1::bigint, $2::bigint));',[CookieId,Number(PendingId)])
 
        await pool.query('DELETE FROM friendships WHERE addressee_id = $1 AND requester_id = $2', [CookieId, Number(PendingId)])
+
+        const ProfileFriend = await pool.query('SELECT id,login,nickname FROM users WHERE id = $1',[Number(PendingId)])
+        return ProfileFriend.rows[0]
     }
     else {
         await pool.query('DELETE FROM friendships WHERE addressee_id = $1 AND requester_id = $2', [CookieId, Number(PendingId)])
