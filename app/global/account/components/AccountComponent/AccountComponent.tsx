@@ -1,4 +1,5 @@
 import { Room } from 'livekit-client';
+import {useSocket} from "@/app/CustomHooks/socket";
 
 interface Props {
     Nickname: string,
@@ -13,6 +14,11 @@ function AccountComponent({
                               Nickname, activeRoomId, activeRoomName,
                               toggleMic, room, micEnabled
                           }: Props) {
+
+    const socket = useSocket();
+    if (!socket) return null;
+
+
     return (
         <div className="w-full p-2">
             <div className="flex items-center gap-1 px-2 py-2 bg-[#121212] rounded-xl shadow-lg border border-gray-500">

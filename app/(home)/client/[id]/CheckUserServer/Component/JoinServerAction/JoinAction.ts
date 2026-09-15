@@ -17,5 +17,12 @@ export async function AddInServer(ServerId: string) {
 
     await pool.query('INSERT INTO server_users (server_id, user_id) VALUES ($1,$2)',[ServerId, UserId.rows[0].login_id]);
 
+    const userRes = await pool.query(
+        'SELECT id, nickname FROM users WHERE id = $1',
+        [UserId.rows[0].login_id]
+    );
+
     revalidatePath(`/client/${ServerId}`);
+
+    return { id: userRes.rows[0].id, nickname: userRes.rows[0].nickname };
 }

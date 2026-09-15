@@ -1,0 +1,52 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { usePendingStore } from '@/app/stores/pendingStore';
+import RightPageTSX from "@/app/(home)/client/pageComponent/RightBarComponent/RightBarTSX";
+import {useFriendsSocket} from "@/app/(home)/client/pageComponent/RightBarComponent/customHooksRightBar/useFriendSocket";
+import {RightBarContent} from "@/app/(home)/client/pageComponent/RightBarComponent/customHooksRightBar/FilteredComponentRightBar";
+import {useOnlineFriends} from "@/app/(home)/client/pageComponent/RightBarComponent/customHooksRightBar/useOnlineFriends";
+import {useHandleAddOrNot} from "@/app/(home)/client/pageComponent/RightBarComponent/customHooksRightBar/useHandleAddOrNot";
+
+interface ArrFriend {
+    id: number;
+    nickname: string;
+    login: string;
+}
+
+interface Props {
+    ArrPending: ArrFriend[];
+    FriendsArr: ArrFriend[]; }
+
+type Filter = 'online' | 'all' | 'add' | 'pending';
+
+function RightBarClient({ ArrPending, FriendsArr }: Props) {
+    const [filter, setFilter] = useState<Filter>('online');
+    const [friendsAll, setAllFriends] = useState<ArrFriend[]>(FriendsArr);
+
+    const AllPending = usePendingStore((s) => s.AllPending);
+    const setAllPending = usePendingStore((s) => s.setAllPending);
+
+    useEffect(() => {
+        setAllPending(ArrPending);
+    }, [ArrPending, setAllPending]);
+
+    useFriendsSocket(setAllFriends);
+    const onlineIds = useOnlineFriends();
+    const handleAddOrNot = useHandleAddOrNot(setAllFriends);
+
+    return (
+        <div className="flex-1 min-w-0 flex flex-col bg-[#0d0d0f]">
+            <RightPageTSX filter={filter} setFilter={setFilter} AllPending={AllPending} />
+            <RightBarContent
+                filter={filter}
+                friendsAll={friendsAll}
+                onlineIds={onlineIds}
+                allPending={AllPending}
+                onAddOrNot={handleAddOrNot}
+            />
+        </div>
+    );
+}
+
+export default RightBarClient;
