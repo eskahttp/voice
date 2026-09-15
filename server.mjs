@@ -70,10 +70,33 @@ io.on('connection', async (socket) => {
 
     const userId = user.id;
 
-    if(!onlineUsers.has(userId)) {
+    const wasOffline = !onlineUsers.has(userId);
+    if (wasOffline) {
         onlineUsers.set(userId, new Set());
     }
     onlineUsers.get(userId).add(socket.id);
+
+
+    const { rows: friendsRows } = await pool.query(
+        `SELECT user_id2 AS friend_id FROM friends WHERE user_id1 = $1
+         UNION
+         SELECT user_id1 AS friend_id FROM friends WHERE user_id2 = $1`,
+        [userId]
+    );
+
+    const friendIds = friendsRows.map(r => Number(r.friend_id));
+
+    const onlineFriendIds = friendIds.filter(id => onlineUsers.has(Number(id)));
+    socket.emit('onlineFriends', onlineFriendIds);
+
+    if (wasOffline) {
+        for (const fid of friendIds) {
+            const sockets = onlineUsers.get(fid);
+            if (sockets) {
+                io.to([...sockets]).emit('CameOnline', userId);
+            }
+        }
+    }
 
     socket.on('sendFriendRequest', async (login) => {
         try {
@@ -89,15 +112,18 @@ io.on('connection', async (socket) => {
             const targetSockets = onlineUsers.get(targetId);
             if (!targetSockets) return;
 
-            io.to([...targetSockets]).emit('friendRequestReceived', {
-                id: socket.data.user.id,
-                login: socket.data.user.login,
-                nickname: socket.data.user.nickname,
-            });
+            io.to([...targetSockets]).emit('friendRequestReceived', socket.data.user);
         } catch (err) {
             console.error('sendFriendRequest error:', err);
         }
     });
+
+    socket.on('AdoptedProfile', (PendingId) => {
+        const targetSockets = onlineUsers.get(PendingId);
+        if (!targetSockets) return;
+
+            io.to([...targetSockets]).emit('AdoptedProfile', socket.data.user);
+    })
 
     socket.on('joinRoom', (serverId) => socket.join(serverId));
 
@@ -118,6 +144,12 @@ io.on('connection', async (socket) => {
         userSockets.delete(socket.id);
 
         if (userSockets.size === 0) {
+            for (const fid of friendIds) {
+                const sockets = onlineUsers.get(fid);
+                if (sockets) {
+                    io.to([...sockets]).emit('friendOffline', userId);
+                }
+            }
             onlineUsers.delete(userId);
         }
     });

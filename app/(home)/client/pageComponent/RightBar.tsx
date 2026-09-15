@@ -1,12 +1,12 @@
 'use client';
 
-import {ReactNode, useEffect, useState} from "react";
-import AddFriend from "@/app/(home)/client/pageComponent/RightBarComponent/AddFriend";
-import FriendsList from "@/app/(home)/client/pageComponent/RightBarComponent/FriendsList";
-import PendingFriend from "@/app/(home)/client/pageComponent/RightBarComponent/PendingFriend";
-import {useSocket} from "@/app/CustomHooks/socket";
-import {AddOrNotFriend} from "@/app/(home)/client/pageComponent/pageAction/PendingFriendAction/AddOrIgnoreFriend";
+import { useEffect, useState } from 'react';
+import { usePendingStore } from '@/app/stores/pendingStore';
 import RightPageTSX from "@/app/(home)/client/pageComponent/RightBarComponent/RightBarTSX";
+import {useFriendsSocket} from "@/app/(home)/client/pageComponent/RightBarComponent/customHooksRightBar/useFriendSocket";
+import {RightBarContent} from "@/app/(home)/client/pageComponent/RightBarComponent/customHooksRightBar/FilteredComponentRightBar";
+import {useOnlineFriends} from "@/app/(home)/client/pageComponent/RightBarComponent/customHooksRightBar/useOnlineFriends";
+import {useHandleAddOrNot} from "@/app/(home)/client/pageComponent/RightBarComponent/customHooksRightBar/useHandleAddOrNot";
 
 interface ArrFriend {
     id: number;
@@ -15,49 +15,38 @@ interface ArrFriend {
 }
 
 interface Props {
-    ArrPending: ArrFriend[]
-    FriendsArr: ArrFriend[]
-}
+    ArrPending: ArrFriend[];
+    FriendsArr: ArrFriend[]; }
 
 type Filter = 'online' | 'all' | 'add' | 'pending';
 
-function RightBarClient({ArrPending, FriendsArr}: Props){           // Passed to the page
+function RightBarClient({ ArrPending, FriendsArr }: Props) {
     const [filter, setFilter] = useState<Filter>('online');
-    const socket = useSocket();
-    const [AllPending, setAllPending] = useState<ArrFriend[]>(ArrPending);
+    const [friendsAll, setAllFriends] = useState<ArrFriend[]>(FriendsArr);
+
+    const AllPending = usePendingStore((s) => s.AllPending);
+    const setAllPending = usePendingStore((s) => s.setAllPending);
 
     useEffect(() => {
-        if (!socket) return;
+        setAllPending(ArrPending);
+    }, [ArrPending, setAllPending]);
 
-        socket.on('friendRequestReceived', (newFriend: ArrFriend) => {
-            setAllPending((prev) => [...prev, newFriend]);
-        })
-
-    }, [socket]);
-
-    const handleAddOrNot = async (AccOrIgn: boolean, PendingId: number)=>{
-        await AddOrNotFriend(AccOrIgn,PendingId)
-        setAllPending(AllPending.filter((friend) => friend.id !== PendingId));
-    }
-
-    const FilteredComponent: () => ReactNode = () => {
-        if (filter === 'add') return <AddFriend />;
-        if (filter === 'pending') return <PendingFriend
-                                            handleAddOrNot={handleAddOrNot}
-                                            ArrPending={AllPending} />
-        else return <FriendsList  FriendsArr={FriendsArr} />
-    }
+    useFriendsSocket(setAllFriends);
+    const onlineIds = useOnlineFriends();
+    const handleAddOrNot = useHandleAddOrNot(setAllFriends);
 
     return (
         <div className="flex-1 min-w-0 flex flex-col bg-[#0d0d0f]">
-            <RightPageTSX
+            <RightPageTSX filter={filter} setFilter={setFilter} AllPending={AllPending} />
+            <RightBarContent
                 filter={filter}
-            setFilter={setFilter}
-            AllPending={AllPending}
-                />
-            {FilteredComponent()}
+                friendsAll={friendsAll}
+                onlineIds={onlineIds}
+                allPending={AllPending}
+                onAddOrNot={handleAddOrNot}
+            />
         </div>
-    )
+    );
 }
 
 export default RightBarClient;
