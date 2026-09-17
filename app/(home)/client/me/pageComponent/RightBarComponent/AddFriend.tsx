@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {AddFriendAction} from "@/app/(home)/client/pageComponent/RightBarComponent/AddFriendAction/AddFriendAction";
+import {AddFriendAction} from "@/app/(home)/client/me/pageComponent/RightBarComponent/AddFriendAction/AddFriendAction";
 import {useSocket} from "@/app/CustomHooks/socket";
 
 type ColorInput = 'red' | 'green' | 'none'

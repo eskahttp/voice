@@ -1,6 +1,6 @@
-import AddFriend from "@/app/(home)/client/pageComponent/RightBarComponent/AddFriend";
-import PendingFriend from "@/app/(home)/client/pageComponent/RightBarComponent/PendingFriend";
-import FriendsList from "@/app/(home)/client/pageComponent/RightBarComponent/FriendsList";
+import AddFriend from "@/app/(home)/client/me/pageComponent/RightBarComponent/AddFriend";
+import PendingFriend from "@/app/(home)/client/me/pageComponent/RightBarComponent/PendingFriend";
+import FriendsList from "@/app/(home)/client/me/pageComponent/RightBarComponent/FriendsList";
 
 interface ArrFriend {
     id: number;
