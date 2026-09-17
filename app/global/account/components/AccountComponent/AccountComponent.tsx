@@ -20,7 +20,7 @@ function AccountComponent({
 
 
     return (
-        <div className="w-full p-2">
+        <div onContextMenu={(e)=> e.preventDefault() } className="w-full p-2">
             <div className="flex items-center gap-1 px-2 py-2 bg-[#121212] rounded-xl shadow-lg border border-gray-500">
                 <div className="flex items-center gap-2 flex-1 min-w-0 hover:bg-[#35373c] rounded-xl px-1 py-1 cursor-pointer">
                     <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white text-xs font-bold shrink-0">

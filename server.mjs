@@ -86,7 +86,7 @@ io.on('connection', async (socket) => {
 
     const friendIds = friendsRows.map(r => Number(r.friend_id));
 
-    const onlineFriendIds = friendIds.filter(id => onlineUsers.has(Number(id)));
+    const onlineFriendIds = friendIds.filter(id => onlineUsers.has(id));
     socket.emit('onlineFriends', onlineFriendIds);
 
     if (wasOffline) {
@@ -100,7 +100,7 @@ io.on('connection', async (socket) => {
 
     socket.on('sendFriendRequest', async (login) => {
         try {
-            if (typeof login !== 'string' || login.length === 0 || login.length > 50) return;
+            if (typeof login !== 'string' || login.length === 0 || login.length > 28) return;
 
             const { rows } = await pool.query(
                 `SELECT id FROM users WHERE login = $1`,
@@ -118,8 +118,8 @@ io.on('connection', async (socket) => {
         }
     });
 
-    socket.on('AdoptedProfile', (PendingId) => {
-        const targetSockets = onlineUsers.get(PendingId);
+    socket.on('AdoptedProfile', (PendingFriendId) => {
+        const targetSockets = onlineUsers.get(PendingFriendId);
         if (!targetSockets) return;
 
             io.to([...targetSockets]).emit('AdoptedProfile', socket.data.user);

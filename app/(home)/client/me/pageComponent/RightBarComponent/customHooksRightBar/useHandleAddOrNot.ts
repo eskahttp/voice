@@ -1,7 +1,7 @@
 
 import { useSocket } from '@/app/CustomHooks/socket';
 import { usePendingStore } from '@/app/stores/pendingStore';
-import { AddOrNotFriend } from '@/app/(home)/client/pageComponent/pageAction/PendingFriendAction/AddOrIgnoreFriend';
+import { AddOrNotFriend } from '@/app/(home)/client/me/pageComponent/pageAction/PendingFriendAction/AddOrIgnoreFriend';
 import {Dispatch, SetStateAction} from "react";
 
 interface ArrFriend {
@@ -14,13 +14,13 @@ export function useHandleAddOrNot(setAllFriends: Dispatch<SetStateAction<ArrFrie
     const socket = useSocket();
     const removePending = usePendingStore((s) => s.removePending);
 
-    return async (accept: boolean, pendingId: number) => {
-        const profile = await AddOrNotFriend(accept, pendingId);
-        removePending(pendingId);
+    return async (accept: boolean, PendingFriendId: number) => {
+        const profile = await AddOrNotFriend(accept, PendingFriendId);
+        removePending(PendingFriendId);
 
         if (accept) {
             setAllFriends((prev) => [...prev, profile]);
-            socket?.emit('AdoptedProfile', pendingId);
+            socket?.emit('AdoptedProfile', PendingFriendId);
         }
     };
 }

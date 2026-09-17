@@ -37,7 +37,6 @@ function ButtonComponent({onClick,active,name,participants,isMicOn}: Props){
         {active && participants.length > 0 && (
             <ul className="ml-6 mt-0.5 space-y-0.5">
                 {participants.map((p) => {
-                    console.log(p.name)
                     return (
                     <li
                         key={p.identity}

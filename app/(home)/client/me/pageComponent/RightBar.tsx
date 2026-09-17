@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { usePendingStore } from '@/app/stores/pendingStore';
-import RightPageTSX from "@/app/(home)/client/pageComponent/RightBarComponent/RightBarTSX";
-import {useFriendsSocket} from "@/app/(home)/client/pageComponent/RightBarComponent/customHooksRightBar/useFriendSocket";
-import {RightBarContent} from "@/app/(home)/client/pageComponent/RightBarComponent/customHooksRightBar/FilteredComponentRightBar";
-import {useOnlineFriends} from "@/app/(home)/client/pageComponent/RightBarComponent/customHooksRightBar/useOnlineFriends";
-import {useHandleAddOrNot} from "@/app/(home)/client/pageComponent/RightBarComponent/customHooksRightBar/useHandleAddOrNot";
+import RightPageTSX from "@/app/(home)/client/me/pageComponent/RightBarComponent/RightBarTSX";
+import {useFriendsSocket} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useFriendSocket";
+import {RightBarContent} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/FilteredComponentRightBar";
+import {useOnlineFriends} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useOnlineFriends";
+import {useHandleAddOrNot} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useHandleAddOrNot";
 
 interface ArrFriend {
     id: number;
@@ -36,7 +36,7 @@ function RightBarClient({ ArrPending, FriendsArr }: Props) {
     const handleAddOrNot = useHandleAddOrNot(setAllFriends);
 
     return (
-        <div className="flex-1 min-w-0 flex flex-col bg-[#0d0d0f]">
+        <div onContextMenu={(e)=> e.preventDefault() } className="flex-1 min-w-0 flex flex-col bg-[#0d0d0f]">
             <RightPageTSX filter={filter} setFilter={setFilter} AllPending={AllPending} />
             <RightBarContent
                 filter={filter}
