@@ -2,14 +2,45 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, {useEffect} from "react";
 import { usePendingStore } from "@/app/stores/pendingStore";
+import {useSocket} from "@/app/CustomHooks/socket";
 
-export default function HomeLink() {
+interface ArrFriend {
+    id: number;
+    nickname: string;
+    login: string;
+}
+
+interface Props {
+    ArrPending: ArrFriend[];
+}
+
+export default function HomeLink({ArrPending}: Props) {
     const pathname = usePathname();
-    const isActive = pathname === '/client';
+    const isActive = pathname === '/client/me';
+
+    const socket = useSocket();
 
     const pendingCount = usePendingStore((state) => state.AllPending.length);
+    const setAllPending = usePendingStore((s) => s.setAllPending);
+    const addPending = usePendingStore((s) => s.addPending);
+
+    useEffect(() => {
+        setAllPending(ArrPending);
+    }, [ArrPending, setAllPending]);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const onRequest = (newFriend: ArrFriend) => addPending(newFriend);
+
+        socket.on('friendRequestReceived', onRequest);
+
+        return () => {
+            socket.off('friendRequestReceived', onRequest);
+        };
+    }, [socket, addPending]);
 
     return (
         <div>
