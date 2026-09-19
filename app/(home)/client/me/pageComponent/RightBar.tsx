@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import {useState } from 'react';
 import { usePendingStore } from '@/app/stores/pendingStore';
 import RightPageTSX from "@/app/(home)/client/me/pageComponent/RightBarComponent/RightBarTSX";
 import {useFriendsSocket} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useFriendSocket";
@@ -15,21 +15,15 @@ interface ArrFriend {
 }
 
 interface Props {
-    ArrPending: ArrFriend[];
     FriendsArr: ArrFriend[]; }
 
 type Filter = 'online' | 'all' | 'add' | 'pending';
 
-function RightBarClient({ ArrPending, FriendsArr }: Props) {
+function RightBarClient({FriendsArr }: Props) {
     const [filter, setFilter] = useState<Filter>('online');
     const [friendsAll, setAllFriends] = useState<ArrFriend[]>(FriendsArr);
 
     const AllPending = usePendingStore((s) => s.AllPending);
-    const setAllPending = usePendingStore((s) => s.setAllPending);
-
-    useEffect(() => {
-        setAllPending(ArrPending);
-    }, [ArrPending, setAllPending]);
 
     useFriendsSocket(setAllFriends);
     const onlineIds = useOnlineFriends();
