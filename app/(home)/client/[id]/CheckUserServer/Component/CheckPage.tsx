@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AddInServer } from "@/app/(home)/client/[id]/CheckUserServer/Component/JoinServerAction/JoinAction";
+import { useSocket } from "@/app/CustomHooks/socket";
 
 interface ServerModalProps {
     serverName: string;
@@ -12,10 +13,32 @@ interface ServerModalProps {
 function ServerModal({ serverName, ServerId }: ServerModalProps) {
     const [isOpen, setIsOpen] = useState(true);
     const router = useRouter();
+    const socket = useSocket();
 
     const handleClose = () => {
         setIsOpen(false);
         router.back();
+    };
+
+    const handleJoin = async () => {
+        const newUser = await AddInServer(ServerId);
+
+        // const d = new Date();
+        // const hours = String(d.getHours()).padStart(2, '0');
+        // const minutes = String(d.getMinutes()).padStart(2, '0');
+
+        if (socket && newUser) {
+            socket.emit('userJoinedServer', { serverId: ServerId, user: newUser });
+            // socket.emit('message', {
+            //     serverId: ServerId,
+            //     id: crypto.randomUUID(),
+            //     nickname: '',
+            //     message: newUser.nickname + ' Has joined!',
+            //     created_at: `${hours}:${minutes}`
+            // });
+        }
+
+        router.refresh();
     };
 
     if (!isOpen) return null;
@@ -47,14 +70,12 @@ function ServerModal({ serverName, ServerId }: ServerModalProps) {
                     </div>
                 </div>
 
-                <form action={AddInServer.bind(null, ServerId)}>
-                    <button
-                        type="submit"
-                        className="w-full py-3 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold transition-colors shadow-lg shadow-blue-600/20"
-                    >
-                        Присоединиться
-                    </button>
-                </form>
+                <button
+                    onClick={handleJoin}
+                    className="w-full py-3 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold transition-colors shadow-lg shadow-blue-600/20"
+                >
+                    Присоединиться
+                </button>
             </div>
         </div>
     );

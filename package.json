@@ -13,6 +13,7 @@
     "@livekit/components-react": "^2.9.23",
     "@livekit/components-styles": "^1.2.0",
     "bcrypt": "^6.0.0",
+    "cookie": "^2.0.1",
     "dotenv": "^17.4.2",
     "livekit-client": "^2.21.0",
     "livekit-server-sdk": "^2.17.0",
@@ -22,11 +23,13 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "socket.io": "^4.8.3",
-    "socket.io-client": "^4.8.3"
+    "socket.io-client": "^4.8.3",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/bcrypt": "^6.0.0",
+    "@types/cookie": "^0.6.0",
     "@types/node": "^20",
     "@types/pg": "^8.20.3",
     "@types/react": "^19",

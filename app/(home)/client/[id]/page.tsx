@@ -14,7 +14,7 @@ interface Props {
 async function Page({ params }: Props) {
     const { id } = await params;
 
-    const CheckUOnS: string = await CheckUserOnServer(id)
+    const CheckUOnS: number = await CheckUserOnServer(id)
 
     const [{ serverName, channels }, nickname , UserServer, GetMessage] = await Promise.all([
         TakeChannelsAndServerName(id),
@@ -24,20 +24,17 @@ async function Page({ params }: Props) {
     ]);
 
     return (
-        CheckUOnS === 'Yes' ?
+        CheckUOnS ?
     <ServerPage
         referal={serverName.referal}
         name={serverName.name}
         channels={channels}
         nickname={nickname}
         RightPage={
-            <RightPage
-                nickname={nickname}
-                serverId={id}
-                users={UserServer}
-                GetMessage={GetMessage}
-            />}
-    /> : <ServerModal
+            <RightPage nickname={nickname} serverId={id} users={UserServer} GetMessage={GetMessage}/>}
+    />
+            :
+            <ServerModal
                 serverName={serverName.name}
                 ServerId={id}
             />

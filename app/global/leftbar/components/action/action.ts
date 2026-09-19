@@ -5,7 +5,20 @@ import { pool } from '@/app/lib/db';
 import {redirect} from "next/navigation";
 import {revalidatePath} from "next/cache";
 
-export async function CreateServer(formData: FormData): Promise<void> {
+export async function CreateServer(formData: FormData): Promise<void> {  // Remove revalidatePath and create a server store.
+    // const ip = await getClientIp();
+    //
+    // const { allowed } = rateLimit({
+    //     action: 'login',
+    //     identifier: ip,
+    //     limit: 10,
+    //     windowMs: 10 * 60 * 1000,
+    // });
+    //
+    // if (!allowed) {
+    //     return { message: 'Try again later.' };
+    // }
+
     const cookieStore = await cookies();
     const token = cookieStore.get('sessionToken')?.value;
 
@@ -34,7 +47,7 @@ export async function CreateServer(formData: FormData): Promise<void> {
 
     await pool.query('INSERT INTO voice_chanels (server_id,name) VALUES ($1,$2)',[serverId,'Lobby'])
 
-    revalidatePath('/', 'layout');
+    revalidatePath('/client', 'layout');
 
     redirect(`/client/${serverId}`);
 

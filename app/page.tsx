@@ -148,7 +148,7 @@ export default function LandingPage() {
                     </p>
 
                     <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                        <Link href={'/client'} className="group relative overflow-hidden rounded-full bg-gradient-to-r from-teal-500 to-cyan-600 px-8 py-4 font-medium text-black transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(32,178,170,0.6)]">
+                        <Link href={'/client/me'} className="group relative overflow-hidden rounded-full bg-gradient-to-r from-teal-500 to-cyan-600 px-8 py-4 font-medium text-black transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(32,178,170,0.6)]">
               <div className="relative z-10 flex items-center gap-2">
                 Join a channel
                 <svg
