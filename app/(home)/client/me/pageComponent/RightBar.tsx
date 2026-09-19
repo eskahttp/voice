@@ -1,12 +1,12 @@
 'use client';
 
-import {useState } from 'react';
+import {useEffect, useState} from 'react';
 import { usePendingStore } from '@/app/stores/pendingStore';
 import RightPageTSX from "@/app/(home)/client/me/pageComponent/RightBarComponent/RightBarTSX";
-import {useFriendsSocket} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useFriendSocket";
 import {RightBarContent} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/FilteredComponentRightBar";
 import {useOnlineFriends} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useOnlineFriends";
 import {useHandleAddOrNot} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useHandleAddOrNot";
+import {useSocket} from "@/app/CustomHooks/socket";
 
 interface ArrFriend {
     id: number;
@@ -19,13 +19,25 @@ interface Props {
 
 type Filter = 'online' | 'all' | 'add' | 'pending';
 
-function RightBarClient({FriendsArr }: Props) {
+function RightBarClient({FriendsArr}: Props) {
     const [filter, setFilter] = useState<Filter>('online');
     const [friendsAll, setAllFriends] = useState<ArrFriend[]>(FriendsArr);
 
     const AllPending = usePendingStore((s) => s.AllPending);
 
-    useFriendsSocket(setAllFriends);
+    const socket = useSocket();
+    useEffect(() => {
+        if (!socket) return;
+
+        const onAdopted = (profile: ArrFriend) => setAllFriends((prev) => [...prev, profile]);
+
+        socket.on('AdoptedProfile', onAdopted);
+
+        return () => {
+            socket.off('AdoptedProfile', onAdopted);
+        };
+    }, [socket, setAllFriends]);
+
     const onlineIds = useOnlineFriends();
     const handleAddOrNot = useHandleAddOrNot(setAllFriends);
 

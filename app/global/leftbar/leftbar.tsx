@@ -15,12 +15,14 @@ interface ArrFriend {
     login: string;
 }
 
-async function LeftBar() {  //Remove revalidatePath and create a server store.
+async function LeftBar() {
     const GetServers : MyServersArr[] = await GetUserServers() ?? []
     const ArrPending: ArrFriend[] = await CheckPendingFriend() ?? []
 
     return (
-        <LeftBarTSX myServers={GetServers} ArrPending={ArrPending} />
+        <LeftBarTSX
+            myServers={GetServers}
+            ArrPending={ArrPending} />
     );
 }
 
