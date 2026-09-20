@@ -55,12 +55,12 @@ export default function RoomPage({ Nickname, room, onLeave, onRoomConnected }: P
                 const data = await res.json();
                 setToken(data.token);
             } catch (e) {
-                console.error('Не удалось получить токен', e);
+                console.error('Failed to obtain the token', e);
             }
         })();
     }, [room, Nickname]);
 
-    if (!token) return <div>Подключение...</div>;
+    if (!token) return <div>Connection...</div>;
 
     return (
         <LiveKitRoom

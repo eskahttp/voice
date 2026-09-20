@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, {useEffect} from "react";
-import { usePendingStore } from "@/app/stores/pendingStore";
+import { usePendingStore } from "@/app/stores/FriendStores/pendingStore";
 import {useSocket} from "@/app/CustomHooks/socket";
 
 interface ArrFriend {

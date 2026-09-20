@@ -1,10 +1,12 @@
 'use client';
 
-import { useVoice } from '@/app/(home)/client/[id]/context/VoiceContext';
 import RoomPage from '@/app/(home)/client/[id]/components/livekit/LiveKit';
+import {useRoomAndMicStore} from "@/app/stores/LiveKit/RoomAndMicStore";
 
 export default function VoiceConnection({ Nickname }: { Nickname: string }) {
-    const { activeRoomId, setActiveRoomId, setActiveRoomName, setRoom } = useVoice();
+    const activeRoomId = useRoomAndMicStore((state) => state.activeRoomId);
+    const setRoom = useRoomAndMicStore((state) => state.setRoom);
+    const setActiveRoomIdAndName = useRoomAndMicStore((state) => state.setActiveRoom);
 
     if (!activeRoomId) return null;
 
@@ -23,8 +25,7 @@ export default function VoiceConnection({ Nickname }: { Nickname: string }) {
                 Nickname={Nickname}
                 room={activeRoomId}
                 onLeave={() => {
-                    setActiveRoomId(null);
-                    setActiveRoomName(null);
+                    setActiveRoomIdAndName(null, null);
                     setRoom(null);
                 }}
                 onRoomConnected={(r) => setRoom(r)}

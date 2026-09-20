@@ -1,26 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSocket } from '@/app/CustomHooks/socket';
+import {useOnlineFriendsIdStore} from "@/app/stores/FriendStores/friendsIdStore";
 
-export function useOnlineFriends() {
+export function useOnlineFriendsSocket() {
     const socket = useSocket();
-    const [onlineIds, setOnlineIds] = useState<Set<number>>(new Set());
 
     useEffect(() => {
         if (!socket) return;
 
-        const onCame = (id: number) =>
-            setOnlineIds((prev) => new Set(prev).add(id));
+        const { addOnline, removeOnline, setOnline } =
+            useOnlineFriendsIdStore.getState();
 
-        const onList = (ids: number[]) => setOnlineIds(new Set(ids));
-
-        const onOffline = (id: number) =>
-            setOnlineIds((prev) => {
-                const next = new Set(prev);
-                next.delete(id);
-                return next;
-            });
+        const onCame = (id: number) => addOnline(id);
+        const onList = (ids: number[]) => setOnline(ids);
+        const onOffline = (id: number) => removeOnline(id);
 
         socket.on('CameOnline', onCame);
         socket.on('onlineFriends', onList);
@@ -32,6 +27,4 @@ export function useOnlineFriends() {
             socket.off('friendOffline', onOffline);
         };
     }, [socket]);
-
-    return onlineIds;
 }

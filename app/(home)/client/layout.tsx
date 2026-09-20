@@ -3,7 +3,6 @@ import "@/app/globals.css";
 import LeftBar from "@/app/global/leftbar/leftbar";
 import AccountInfo from "@/app/global/account/account";
 import { TakeNickname } from "@/app/global/account/components/action/action";
-import { VoiceProvider } from "@/app/(home)/client/[id]/context/VoiceContext";
 import VoiceConnection from "@/app/(home)/client/[id]/components/livekit/VoiceConnection";
 
 export const metadata: Metadata = {
@@ -19,7 +18,6 @@ export default async function NewLayout({
     const Nickname = await TakeNickname();
 
     return (
-        <VoiceProvider>
             <div className="h-screen w-screen overflow-hidden">
                 <LeftBar />
                 <AccountInfo Nickname={Nickname} />
@@ -28,6 +26,5 @@ export default async function NewLayout({
                 </div>
                 <VoiceConnection Nickname={Nickname} />
             </div>
-        </VoiceProvider>
     );
 }

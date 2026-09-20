@@ -2,8 +2,8 @@
 
 import { ReactNode, useState } from 'react';
 import ButtonChannel from '@/app/(home)/client/[id]/components/Channels/ButtonChanel';
-import { useVoice } from '@/app/(home)/client/[id]/context/VoiceContext';
 import ServerMenu from "@/app/(home)/client/[id]/components/RightPage/ServerPageMenu/ServerPageMenu";
+import {useRoomAndMicStore} from "@/app/stores/LiveKit/RoomAndMicStore";
 
 interface Channel {
     id: string;
@@ -19,12 +19,14 @@ interface Props {
 }
 
 function ServerPage({ name, channels, RightPage, referal }: Props) {
-    const { room, activeRoomId, setActiveRoomId, setActiveRoomName } = useVoice();
-    const [menuOpen, setMenuOpen] = useState(false); 
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const setActiveRoomIdAndName = useRoomAndMicStore((state) => state.setActiveRoom);
+    const activeRoomId = useRoomAndMicStore((state) => state.activeRoomId);
+    const room = useRoomAndMicStore((state) => state.room);
 
     const handleChannelClick = (ch: Channel) => {
-        setActiveRoomId(ch.id);
-        setActiveRoomName(ch.name);
+        setActiveRoomIdAndName(ch.id, ch.name);
     };
 
     return (

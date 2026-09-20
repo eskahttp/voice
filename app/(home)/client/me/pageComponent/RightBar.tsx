@@ -1,12 +1,12 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import { usePendingStore } from '@/app/stores/pendingStore';
+import { usePendingStore } from '@/app/stores/FriendStores/pendingStore';
 import RightPageTSX from "@/app/(home)/client/me/pageComponent/RightBarComponent/RightBarTSX";
 import {RightBarContent} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/FilteredComponentRightBar";
-import {useOnlineFriends} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useOnlineFriends";
 import {useHandleAddOrNot} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useHandleAddOrNot";
 import {useSocket} from "@/app/CustomHooks/socket";
+import {useOnlineFriendsIdStore} from "@/app/stores/FriendStores/friendsIdStore";
 
 interface ArrFriend {
     id: number;
@@ -38,7 +38,7 @@ function RightBarClient({FriendsArr}: Props) {
         };
     }, [socket, setAllFriends]);
 
-    const onlineIds = useOnlineFriends();
+    const onlineIds = useOnlineFriendsIdStore(state => state.onlineIds)
     const handleAddOrNot = useHandleAddOrNot(setAllFriends);
 
     return (

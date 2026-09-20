@@ -1,108 +1,66 @@
 'use client';
 
-import { JSX, useEffect, useState } from "react";
-import { RoomEvent } from 'livekit-client';
-import {useVoice} from "@/app/(home)/client/[id]/context/VoiceContext";
+import { JSX, useEffect } from "react";
 import AccountComponent from "@/app/global/account/components/AccountComponent/AccountComponent";
+import {useRoomAndMicStore} from "@/app/stores/LiveKit/RoomAndMicStore";
+import {useMicrophoneEvents} from "@/app/global/account/components/Hooks/useMicrophoneEvents";
 
 interface Props {
     Nickname: string;
 }
 
+const clickAudio = typeof Audio !== "undefined"
+    ? new Audio("/audio/minecraft-click_DeZnoGEf.mp3")
+    : null;
+
 function AccountInfo({ Nickname }: Props): JSX.Element {
-    const { room, setRoom, activeRoomId, setActiveRoomId, activeRoomName, setActiveRoomName } = useVoice();
 
-    const [micEnabled, setMicEnabled] = useState<boolean>(true);
+    const room = useRoomAndMicStore((state) => state.room);
+    const setRoom = useRoomAndMicStore((state) => state.setRoom);
 
-    const audio = new Audio("/audio/minecraft-click_DeZnoGEf.mp3");
+    const ActiveRoomId = useRoomAndMicStore((state) => state.activeRoomId);
+    const ActiveRoomName = useRoomAndMicStore((state) => state.activeRoomName);
+    const setActiveRoom = useRoomAndMicStore((state) => state.setActiveRoom);
+
+    const microphone = useRoomAndMicStore((state) => state.microphone);
+    const setMicrophone = useRoomAndMicStore((state) => state.setMicrophone);
+
+
 
     useEffect(() => {
         try {
             const saved = localStorage.getItem("micEnabled");
             if (saved !== null) {
-                setMicEnabled(JSON.parse(saved));
+                setMicrophone(JSON.parse(saved));
             }
-        }
-        catch (e){
-            console.error(e);
-            setMicEnabled(true);
-        }
-    }, []);
+        }catch{}
+    }, [setMicrophone]);
 
-    useEffect(() => {
-        if (!room) return
-
-        const updateMic = () => {
-            setMicEnabled(room.localParticipant.isMicrophoneEnabled);
-        };
-
-
-        updateMic();
-
-
-        room.on(RoomEvent.TrackMuted, updateMic);
-        room.on(RoomEvent.TrackUnmuted, updateMic);
-        room.on(RoomEvent.LocalTrackPublished, updateMic);
-        room.on(RoomEvent.LocalTrackUnpublished, updateMic);
-        room.on(RoomEvent.Connected, updateMic);
-
-        return () => {
-            room.off(RoomEvent.TrackMuted, updateMic);
-            room.off(RoomEvent.TrackUnmuted, updateMic);
-            room.off(RoomEvent.LocalTrackPublished, updateMic);
-            room.off(RoomEvent.LocalTrackUnpublished, updateMic);
-            room.off(RoomEvent.Connected, updateMic);
-        };
-    }, [room]);
+    useMicrophoneEvents(room,setMicrophone)
 
     const toggleMic = async () => {
         if (!room) {
-            setMicEnabled((prev) => {
-                const next = !prev;
-                try{
-                    audio.play();
-                    localStorage.setItem("micEnabled", JSON.stringify(next));
-                    return next;
-                }
-                catch (e){
-                    audio.play();
-                    console.error(e);
-                    return true
-                }
-            });
+            setMicrophone(!microphone);
+            clickAudio?.play();
+            try{localStorage.setItem('micEnabled', String(!microphone));} catch{}
             return
         }
 
-        const currentlyEnabled = room.localParticipant.isMicrophoneEnabled;
-        const next = !currentlyEnabled;
-
+        const next = !room.localParticipant.isMicrophoneEnabled;
         await room.localParticipant.setMicrophoneEnabled(next);
-        setMicEnabled(next);
-        try{
-            audio.play();
-            localStorage.setItem("micEnabled", JSON.stringify(next));
-        }
-        catch (e){
-            audio.play();
-            console.error(e);
-        }
+        setMicrophone(next);
     };
 
     const leaveRoom = async () => {
         if (!room) return;
         await room.disconnect();
-        const saved = localStorage.getItem("micEnabled");
-        if (saved !== null) {
-            setMicEnabled(JSON.parse(saved));
-        }
         setRoom(null);
-        setActiveRoomId(null);
-        setActiveRoomName(null);
+        setActiveRoom(null, null);
     };
 
     return (
         <div className="fixed bottom-0 w-[364px] flex flex-col z-50">
-            {activeRoomId && (
+            {ActiveRoomId && (
                 <div className="flex items-center justify-between px-3 py-2 mx-2 mt-2 rounded-xl bg-[#232428] border border-gray-500">
                     <div className="flex flex-col min-w-0">
                         <div className="text-xs text-green-400 font-semibold flex items-center gap-1">
@@ -110,7 +68,7 @@ function AccountInfo({ Nickname }: Props): JSX.Element {
                             Voice connection established.
                         </div>
                         <div className="text-[11px] text-gray-400 truncate">
-                            {activeRoomName ?? `Канал #${activeRoomId}`}
+                            {ActiveRoomName ?? `Канал #${ActiveRoomId}`}
                         </div>
                     </div>
                     <button
@@ -124,11 +82,11 @@ function AccountInfo({ Nickname }: Props): JSX.Element {
             )}
             <AccountComponent
                 Nickname={Nickname}
-                activeRoomId={activeRoomId}
-                activeRoomName={activeRoomName}
+                activeRoomId={ActiveRoomId}
+                activeRoomName={ActiveRoomName}
                 toggleMic={toggleMic}
                 room={room}
-                micEnabled={micEnabled}
+                micEnabled={microphone}
             />
         </div>
     );

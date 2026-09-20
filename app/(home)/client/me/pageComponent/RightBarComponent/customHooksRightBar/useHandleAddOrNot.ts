@@ -1,6 +1,6 @@
 
 import { useSocket } from '@/app/CustomHooks/socket';
-import { usePendingStore } from '@/app/stores/pendingStore';
+import { usePendingStore } from '@/app/stores/FriendStores/pendingStore';
 import { AddOrNotFriend } from '@/app/(home)/client/me/pageComponent/pageAction/PendingFriendAction/AddOrIgnoreFriend';
 import {Dispatch, SetStateAction} from "react";
 
