@@ -3,9 +3,9 @@
 import {useState} from "react";
 import CreateComponent from "@/app/global/leftbar/components/clientcomponent/CreateComponent";
 import Link from "next/link";
-import {CreateServer} from "@/app/global/leftbar/components/action/action";
+import {CreateServer} from "@/app/global/leftbar/components/action/CreateServer";
 import {JoinServerAction} from "@/app/global/leftbar/components/clientcomponent/ServersUserAction/JoinServer";
-import { useParams } from "next/navigation";
+import {useParams} from "next/navigation";
 
 interface Props {
     ServerBar: {
@@ -19,7 +19,9 @@ type Filter = 'CreateServer' | 'JoinServer' | 'nothing' ;
 
 function AddServer({ServerBar}: Props){
     const [filterServer, setFilterServer] = useState<Filter>('nothing');
+
     const params : {id:string} = useParams<{ id: string }>();
+
     const serverId : number = Number(params.id);
 
     return (<div>
@@ -31,19 +33,19 @@ function AddServer({ServerBar}: Props){
                 isActive ? 'bg-gradient-to-r from-teal-500 to-cyan-600' : 'bg-[#121212]'
             }`;
 
-            return (
-                <div key={item.id} className="mb-1">
-                    {isActive ? (
-                        <div className={commonClasses}>
-                            {item.name.slice(0, 4)}
-                        </div>
-                    ) : (
-                        <Link href={`/client/${item.id}`} className={commonClasses}>
-                            {item.name.slice(0, 4)}
-                        </Link>
-                    )}
-                </div>
-            );
+                return (
+                    <div key={item.id} className="mb-1">
+                        {isActive ? (
+                            <div className={commonClasses}>
+                                {item.name.slice(0, 4)}
+                            </div>
+                        ) : (
+                            <Link href={`/client/${item.id}`} className={commonClasses}>
+                                {item.name.slice(0, 4)}
+                            </Link>
+                        )}
+                    </div>
+                );
         })}
 
         <div onClick={()=>setFilterServer('CreateServer')}
@@ -54,11 +56,11 @@ function AddServer({ServerBar}: Props){
 
         {filterServer === 'CreateServer' && (
             <CreateComponent
-                UpText={'Создайте свой сервер'}
-                MiddleText={'Ваш сервер — это место, где вы можете тусоваться со своими друзьями. Создайте сервер и начните общаться.'}
-                NameOrRef={'Название сервера'}
-                input={'Например Старперцы'}
-                button={'Создать'}
+                UpText={'Create your own server'}
+                MiddleText={'Your server is a place where you can hang out with your friends. Create a server and start chatting.'}
+                NameOrRef={'Server name'}
+                input={'For example, a game server.'}
+                button={'Create'}
                 FNServer={CreateServer}
 
                 JoinServer={<div
@@ -72,11 +74,11 @@ function AddServer({ServerBar}: Props){
         />)}
 
         {filterServer === 'JoinServer' && (<CreateComponent
-            UpText={'Присоединиться к серверу'}
-            MiddleText={'Введите приглашение, чтобы присоединиться к существующему серверу'}
-            NameOrRef={'Ссылка-приглашение'}
+            UpText={'Join the server'}
+            MiddleText={'Enter an invitation to join an existing server.'}
+            NameOrRef={'Invitation link'}
             input={'GHghkwBnf'}
-            button={'Присоединиться'}
+            button={'Join'}
             FNServer={JoinServerAction}
             SetNothing={()=> setFilterServer('nothing')}
         />)}

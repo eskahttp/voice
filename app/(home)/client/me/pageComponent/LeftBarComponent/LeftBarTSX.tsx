@@ -1,6 +1,6 @@
 'use client'
 
-import {usePendingStore} from "@/app/stores/pendingStore";
+import {usePendingStore} from "@/app/stores/FriendStores/pendingStore";
 import {ReactNode} from "react";
 
 interface Props {

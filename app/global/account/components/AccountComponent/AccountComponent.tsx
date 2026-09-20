@@ -1,5 +1,5 @@
 import { Room } from 'livekit-client';
-import {useSocket} from "@/app/CustomHooks/socket";
+import {useOnlineFriendsSocket} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useOnlineFriends";
 
 interface Props {
     Nickname: string,
@@ -14,10 +14,7 @@ function AccountComponent({
                               Nickname, activeRoomId, activeRoomName,
                               toggleMic, room, micEnabled
                           }: Props) {
-
-    const socket = useSocket();
-    if (!socket) return null;
-
+    useOnlineFriendsSocket()
 
     return (
         <div onContextMenu={(e)=> e.preventDefault() } className="w-full p-2">

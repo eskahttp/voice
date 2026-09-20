@@ -5,7 +5,7 @@ import { pool } from '@/app/lib/db';
 import {redirect} from "next/navigation";
 import {revalidatePath} from "next/cache";
 
-export async function CreateServer(formData: FormData): Promise<void> {  // Remove revalidatePath and create a server store.
+export async function CreateServer(formData: FormData): Promise<void> {
     // const ip = await getClientIp();
     //
     // const { allowed } = rateLimit({
@@ -49,6 +49,5 @@ export async function CreateServer(formData: FormData): Promise<void> {  // Remo
 
     revalidatePath('/client', 'layout');
 
-    redirect(`/client/${serverId}`);
-
+    redirect(`/client/${serverId}`)
 }
