@@ -39,9 +39,9 @@ function AccountInfo({ Nickname }: Props): JSX.Element {
     useMicrophoneEvents(room,setMicrophone)
 
     const toggleMic = async () => {
+        clickAudio?.play();
         if (!room) {
             setMicrophone(!microphone);
-            clickAudio?.play();
             try{localStorage.setItem('micEnabled', String(!microphone));} catch{}
             return
         }

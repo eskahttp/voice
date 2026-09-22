@@ -2,13 +2,20 @@
 
 import MessageServer from "@/app/(home)/client/[id]/components/RightPage/MessageServer";
 import UserServer from "@/app/(home)/client/[id]/components/RightPage/UserServer";
-import {RefObject} from "react";
+import { RefObject } from "react";
+import { useOnlineServersUserStore } from "@/app/stores/ServersStore/serversStore";
 
 interface Users { id: string; nickname: string; }
 interface Message { id: string; nickname: string; message: string; created_at: string; }
-interface Props { users: Users[]; SubmitAction: (formData:FormData)=> void; message: Message[]; scrollRef: RefObject<HTMLDivElement | null>; }
+interface Props {
+    userList: Users[];
+    SubmitAction: (formData: FormData) => void;
+    message: Message[];
+    scrollRef: RefObject<HTMLDivElement | null>;
+}
 
-function RightClient({users,SubmitAction, message, scrollRef}: Props){
+function RightClient({ userList, SubmitAction, message, scrollRef }: Props) {
+    const onlineIds = useOnlineServersUserStore(state => state.onlineIds);
 
     return (
         <div className="flex h-screen w-full bg-[#0d0d0f] text-gray-200 border-l border-[#232428]">
@@ -25,9 +32,9 @@ function RightClient({users,SubmitAction, message, scrollRef}: Props){
                         {message.map(mes => (
                             <MessageServer
                                 key={mes.id}
-                            message={mes.message}
-                            nickname={mes.nickname}
-                            created_at={mes.created_at}
+                                message={mes.message}
+                                nickname={mes.nickname}
+                                created_at={mes.created_at}
                             />
                         ))}
                     </div>
@@ -53,12 +60,10 @@ function RightClient({users,SubmitAction, message, scrollRef}: Props){
             </div>
 
             <div className="w-74 border-l border-[#232428] bg-[#0b0b0d] p-4">
-                <p className="mb-3 text-xs font-semibold uppercase text-gray-400">
-                    Online — {users.length}
-                </p>
-                {users.map(u => (
-                    <UserServer key={u.id} nickname={u.nickname} />
-                ))}
+                <UserServer
+                    userList={userList}
+                    onlineIds={onlineIds}
+                />
             </div>
         </div>
     );

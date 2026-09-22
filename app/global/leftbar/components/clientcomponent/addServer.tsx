@@ -19,10 +19,29 @@ type Filter = 'CreateServer' | 'JoinServer' | 'nothing' ;
 
 function AddServer({ServerBar}: Props){
     const [filterServer, setFilterServer] = useState<Filter>('nothing');
+    const [messageServer, setMessageServer] = useState<{message: string}>({message: ''});
 
     const params : {id:string} = useParams<{ id: string }>();
 
     const serverId : number = Number(params.id);
+
+    const CreateOrJoinServer = async (formData:FormData)=>{
+        if (filterServer === 'CreateServer'){
+            const MesError : void | {message: string} = await CreateServer(formData)
+            if (MesError){
+                setMessageServer(MesError)
+                return;
+            }
+        }
+
+        if (filterServer === 'JoinServer'){
+            const MesError : void | {message: string} = await JoinServerAction(formData)
+            if (MesError){
+                setMessageServer(MesError)
+                return;
+            }
+        }
+    }
 
     return (<div>
 
@@ -54,33 +73,16 @@ function AddServer({ServerBar}: Props){
         </div>
 
 
-        {filterServer === 'CreateServer' && (
+        {filterServer !== 'nothing' && (
             <CreateComponent
-                UpText={'Create your own server'}
-                MiddleText={'Your server is a place where you can hang out with your friends. Create a server and start chatting.'}
-                NameOrRef={'Server name'}
-                input={'For example, a game server.'}
-                button={'Create'}
-                FNServer={CreateServer}
-
-                JoinServer={<div
-                    className={'text-blue-400 cursor-pointer'} > &nbsp; <span className={'underline'}
-                        onClick={()=> setFilterServer('JoinServer')}>
-                        Или присоедениться к серверу
-            </span>
-                </div>}
-
-            SetNothing={()=> setFilterServer('nothing')}
-        />)}
-
-        {filterServer === 'JoinServer' && (<CreateComponent
-            UpText={'Join the server'}
-            MiddleText={'Enter an invitation to join an existing server.'}
-            NameOrRef={'Invitation link'}
-            input={'GHghkwBnf'}
-            button={'Join'}
-            FNServer={JoinServerAction}
-            SetNothing={()=> setFilterServer('nothing')}
+                messageServer={messageServer.message}
+                filterServer={filterServer}
+                FNServer={CreateOrJoinServer}
+                SetNothing={()=> {
+                    setFilterServer('nothing')
+                    setMessageServer({message: ''})
+                }}
+                setJoinServer={()=> setFilterServer('JoinServer')}
         />)}
     </div>)
 }

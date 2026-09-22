@@ -13,6 +13,7 @@ interface FriendsArr {
 interface Props {
     FriendsArr: FriendsArr[];
     isOnlineList?: boolean;
+    onlineIds: Set<number>;
 }
 
 interface ContextMenuState {
@@ -21,7 +22,7 @@ interface ContextMenuState {
     friend: FriendsArr;
 }
 
-function FriendsList({ FriendsArr, isOnlineList }: Props) {
+function FriendsList({ FriendsArr, isOnlineList, onlineIds }: Props) {
     const [menu, setMenu] = useState<ContextMenuState | null>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -64,16 +65,28 @@ function FriendsList({ FriendsArr, isOnlineList }: Props) {
                     className="group flex items-center justify-between py-3 border-b border-[#232428] hover:bg-[#1a1b1e] px-2 rounded-md transition hover:cursor-pointer"
                 >
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-[#232428] overflow-hidden flex items-center justify-center text-gray-300 font-semibold">
-                            {friend.nickname.charAt(0).toUpperCase()}
+                        <div className="relative">
+                            <div className="w-10 h-10 rounded-full bg-[#232428] overflow-hidden flex items-center justify-center text-gray-300 font-semibold">
+                                {friend.nickname.charAt(0).toUpperCase()}
+                            </div>
+                            <span
+                                className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-[#111214] ${
+                                    onlineIds.has(friend.id) ? "bg-green-500" : "bg-gray-500"
+                                }`}
+                            />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-base font-semibold text-gray-100">
-                                {friend.nickname}
-                                <span className="text-xs font-semibold text-gray-400 ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-100">
-                                    {friend.login}
-                                </span>
-                            </span>
+            <span className="text-base font-semibold text-gray-100">
+                {friend.nickname}
+                <span className="text-xs font-semibold text-gray-400 ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-100">
+                    {friend.login}
+                </span>
+            </span>
+                            <span
+                                className={'text-xs font-medium text-gray-400'}
+                            >
+                {onlineIds.has(friend.id) ? "Online" : "Offline"}
+            </span>
                         </div>
                     </div>
                 </div>

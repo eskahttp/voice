@@ -68,7 +68,8 @@ io.on('connection', async (socket) => {
     const user = rows[0];
     socket.data.user = user;
 
-    const userId = user.id;
+    const userId = Number(user.id);
+    socket.data.userId = userId;
 
     const wasOffline = !onlineUsers.has(userId);
     if (wasOffline) {
@@ -77,26 +78,56 @@ io.on('connection', async (socket) => {
     onlineUsers.get(userId).add(socket.id);
 
 
-    const { rows: friendsRows } = await pool.query(
-        `SELECT user_id2 AS friend_id FROM friends WHERE user_id1 = $1
+    const [friendsResult, serversResult] = await Promise.all([
+        pool.query(
+            `SELECT user_id2 AS friend_id FROM friends WHERE user_id1 = $1
          UNION
          SELECT user_id1 AS friend_id FROM friends WHERE user_id2 = $1`,
-        [userId]
-    );
+            [userId]
+        ),
+        pool.query(
+            `SELECT server_id FROM server_users WHERE user_id = $1`,
+            [userId]
+        )
+    ]);
+    const friendsRows = friendsResult.rows;
+    const serversRows = serversResult.rows;
 
     const friendIds = friendsRows.map(r => Number(r.friend_id));
+    const serverIds = serversRows.map(r => String(r.server_id));
 
     const onlineFriendIds = friendIds.filter(id => onlineUsers.has(id));
-    socket.emit('onlineFriends', onlineFriendIds);
+
+    socket.emit('onlineFriends', {onlineFriendIds: onlineFriendIds, allFriends: friendIds});
 
     if (wasOffline) {
         for (const fid of friendIds) {
             const sockets = onlineUsers.get(fid);
             if (sockets) {
-                io.to([...sockets]).emit('CameOnline', userId);
+                io.to([...sockets]).emit('CameOnline', socket.data.userId);
             }
         }
+
+        for (const sid of serverIds) {
+            socket.to(sid).emit('newOnlineUser', socket.data.userId);
+         }
     }
+
+    socket.on('getServerUsers', async(serverId)=> {
+        const CheckUserOnServer = await pool.query('SELECT user_id FROM server_users WHERE server_id = $1 AND user_id = $2', [serverId, socket.data.userId])
+        if (CheckUserOnServer.rows.length === 0) return;
+
+        const AllUsersServerQuery = await pool.query('SELECT u.id, u.nickname\n' +
+            'FROM users u\n' +
+            'INNER JOIN server_users su ON su.user_id = u.id\n' +
+            'WHERE su.server_id = $1;', [serverId])
+
+        const AllUsersServer = AllUsersServerQuery.rows;
+        const OnlineUsersServer = AllUsersServer.map(user => user.id).filter(id => onlineUsers.has(id));
+
+        socket.emit('getAllUsersAndOnlineUsers', {AllUsersServer: AllUsersServer, OnlineUsersServer: OnlineUsersServer});
+
+    })
 
     socket.on('sendFriendRequest', async (login) => {
         try {
@@ -126,19 +157,18 @@ io.on('connection', async (socket) => {
     })
 
     socket.on('joinRoom', (serverId) => socket.join(serverId));
+    socket.on('leaveRoom', (serverId) => socket.leave(serverId));
 
     socket.on('message', ({ serverId, ...msg }) => {
         io.to(serverId).emit('message', msg);
     });
-
-    socket.on('leaveRoom', (serverId) => socket.leave(serverId));
 
     socket.on('userJoinedServer', ({ serverId, user }) => {
         io.to(serverId).emit('userJoined', user);
     });
 
     socket.on('disconnect', () => {
-        const userSockets = onlineUsers.get(userId);
+        const userSockets = onlineUsers.get(socket.data.userId);
         if (!userSockets) return;
 
         userSockets.delete(socket.id);
@@ -147,10 +177,15 @@ io.on('connection', async (socket) => {
             for (const fid of friendIds) {
                 const sockets = onlineUsers.get(fid);
                 if (sockets) {
-                    io.to([...sockets]).emit('friendOffline', userId);
+                    io.to([...sockets]).emit('friendOffline', socket.data.userId);
                 }
             }
-            onlineUsers.delete(userId);
+
+            for (const sid of serverIds) {
+                io.to(sid).emit('deleteOnlineUser', socket.data.userId);
+            }
+
+            onlineUsers.delete(socket.data.userId);
         }
     });
 });
