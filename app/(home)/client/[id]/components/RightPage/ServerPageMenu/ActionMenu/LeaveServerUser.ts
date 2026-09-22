@@ -26,9 +26,7 @@ export async function LeaveServerUser(referal: string){
 
     if (CheckAdminServer.rows.length > 0){
         await pool.query('DELETE FROM servers WHERE id = $1',[CheckAdminServer.rows[0].id]);
-        await pool.query('DELETE FROM server_users WHERE server_id = $1',[CheckAdminServer.rows[0].id]);
-        await pool.query('DELETE FROM message_user_server WHERE server_id = $1',[CheckAdminServer.rows[0].id]);
-        revalidatePath('/client');
+        revalidatePath('/client/me');
         redirect('/client/me');
     }
 
@@ -36,5 +34,4 @@ export async function LeaveServerUser(referal: string){
 
     revalidatePath('/client/me');
     redirect('/client/me');
-
 }

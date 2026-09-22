@@ -3,19 +3,13 @@ import { create } from 'zustand';
 
 interface OnlineFriendsState {
     onlineIds: Set<number>;
-    AllFriendIds: Set<number>;
-    setFriends: (ids: number[]) => void;
     addOnline: (id: number) => void;
     removeOnline: (id: number) => void;
     setOnline: (ids: number[]) => void;
-    isOnline: (id: number) => boolean;
 }
 
-export const useOnlineFriendsIdStore = create<OnlineFriendsState>((set, get) => ({
+export const useOnlineServersUserStore = create<OnlineFriendsState>((set, get) => ({
     onlineIds: new Set<number>(),
-
-    AllFriendIds: new Set<number>(),
-    setFriends: (ids) => set({ AllFriendIds: new Set(ids) }),
 
     addOnline: (id) =>
         set((state) => {
@@ -35,5 +29,4 @@ export const useOnlineFriendsIdStore = create<OnlineFriendsState>((set, get) => 
 
     setOnline: (ids) => set({ onlineIds: new Set(ids) }),
 
-    isOnline: (id) => get().onlineIds.has(id),
 }));

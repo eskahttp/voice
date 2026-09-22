@@ -6,7 +6,6 @@ import RightPageTSX from "@/app/(home)/client/me/pageComponent/RightBarComponent
 import {RightBarContent} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/FilteredComponentRightBar";
 import {useHandleAddOrNot} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useHandleAddOrNot";
 import {useSocket} from "@/app/CustomHooks/socket";
-import {useOnlineFriendsIdStore} from "@/app/stores/FriendStores/friendsIdStore";
 
 interface ArrFriend {
     id: number;
@@ -38,7 +37,6 @@ function RightBarClient({FriendsArr}: Props) {
         };
     }, [socket, setAllFriends]);
 
-    const onlineIds = useOnlineFriendsIdStore(state => state.onlineIds)
     const handleAddOrNot = useHandleAddOrNot(setAllFriends);
 
     return (
@@ -47,7 +45,6 @@ function RightBarClient({FriendsArr}: Props) {
             <RightBarContent
                 filter={filter}
                 friendsAll={friendsAll}
-                onlineIds={onlineIds}
                 allPending={AllPending}
                 onAddOrNot={handleAddOrNot}
             />
