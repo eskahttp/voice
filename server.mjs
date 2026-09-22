@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import { Pool } from 'pg';
 import {getCookie} from "./getCookie.js";
+import {clearTimeout, setTimeout} from "node:timers";
 
 if (fs.existsSync('.env.local')) {
     dotenv.config({ path: '.env.local' });
@@ -49,6 +50,7 @@ const httpServer = createServer(handler);
 const io = new Server(httpServer)
 
 const onlineUsers = new Map();
+const disconnectTimers = new Map();
 
 io.on('connection', async (socket) => {
     const token = getCookie(socket.handshake.headers.cookie, 'sessionToken');
@@ -70,6 +72,11 @@ io.on('connection', async (socket) => {
 
     const userId = Number(user.id);
     socket.data.userId = userId;
+
+    if (disconnectTimers.has(socket.data.userId)) {
+        clearTimeout(disconnectTimers.get(socket.data.userId));
+        disconnectTimers.delete(socket.data.userId);
+    }
 
     const wasOffline = !onlineUsers.has(userId);
     if (wasOffline) {
@@ -171,22 +178,26 @@ io.on('connection', async (socket) => {
         const userSockets = onlineUsers.get(socket.data.userId);
         if (!userSockets) return;
 
-        userSockets.delete(socket.id);
+        const disconnectTimer = setTimeout(()=>{
+            userSockets.delete(socket.id);
 
-        if (userSockets.size === 0) {
-            for (const fid of friendIds) {
-                const sockets = onlineUsers.get(fid);
-                if (sockets) {
-                    io.to([...sockets]).emit('friendOffline', socket.data.userId);
+            if (userSockets.size === 0) {
+                for (const fid of friendIds) {
+                    const sockets = onlineUsers.get(fid);
+                    if (sockets) {
+                        io.to([...sockets]).emit('friendOffline', socket.data.userId);
+                    }
                 }
-            }
 
-            for (const sid of serverIds) {
-                io.to(sid).emit('deleteOnlineUser', socket.data.userId);
-            }
+                for (const sid of serverIds) {
+                    io.to(sid).emit('deleteOnlineUser', socket.data.userId);
+                }
 
-            onlineUsers.delete(socket.data.userId);
-        }
+                onlineUsers.delete(socket.data.userId);
+                disconnectTimers.delete(socket.data.userId);
+            }
+            }, 5000);
+        disconnectTimers.set(userId, disconnectTimer);
     });
 });
 
