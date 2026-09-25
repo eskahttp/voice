@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import {MenuItemTSX} from "@/app/(home)/client/me/pageComponent/RightBarComponent/FriendListComponent/MenuItemTSX";
 import {useFriendList} from "@/app/(home)/client/me/pageComponent/RightBarComponent/FriendListComponent/useFriendList";
+import {FaMagnifyingGlass} from "react-icons/fa6";
 
 interface FriendsArr {
     id: number;
@@ -42,7 +43,7 @@ function FriendsList({ FriendsArr, isOnlineList, onlineIds }: Props) {
     return (
         <div className="flex-1 overflow-y-auto px-8 py-4">
             <div className="relative mb-6">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><FaMagnifyingGlass /></span>
                 <input
                     type="text"
                     placeholder="Search"
@@ -52,7 +53,7 @@ function FriendsList({ FriendsArr, isOnlineList, onlineIds }: Props) {
                 />
             </div>
 
-            <div className="text-xs font-semibold text-gray-300 uppercase tracking-wide mb-3">
+            <div className="text-xs font-semibold text-gray-300 tracking-wide mb-3">
                 {isOnlineList ? 'Online' : 'All Friends'} — {FriendsArr.length}
             </div>
 

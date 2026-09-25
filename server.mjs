@@ -115,9 +115,11 @@ io.on('connection', async (socket) => {
             }
         }
 
-        for (const sid of serverIds) {
-            socket.to(sid).emit('newOnlineUser', socket.data.userId);
-         }
+        if (serverIds.length > 0){
+            for (const sid of serverIds) {
+                socket.to(sid).emit('newOnlineUser', socket.data.userId);
+            }
+        }
     }
 
     socket.on('getServerUsers', async(serverId)=> {
