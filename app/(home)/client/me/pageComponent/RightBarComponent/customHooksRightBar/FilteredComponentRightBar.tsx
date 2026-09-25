@@ -1,7 +1,7 @@
 import AddFriend from "@/app/(home)/client/me/pageComponent/RightBarComponent/AddFriend";
 import PendingFriend from "@/app/(home)/client/me/pageComponent/RightBarComponent/PendingFriend";
 import FriendsList from "@/app/(home)/client/me/pageComponent/RightBarComponent/FriendsList";
-import {useOnlineFriendsIdStore} from "@/app/stores/FriendStores/friendsIdStore";
+import {useOnlineFriendsIdStore} from "@/app/stores/FriendStores/onlineFriendsStore";
 
 interface ArrFriend {
     id: number;

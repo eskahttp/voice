@@ -6,6 +6,7 @@ import RightPageTSX from "@/app/(home)/client/me/pageComponent/RightBarComponent
 import {RightBarContent} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/FilteredComponentRightBar";
 import {useHandleAddOrNot} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useHandleAddOrNot";
 import {useSocket} from "@/app/CustomHooks/socket";
+import {useOnlineFriendsIdStore} from "@/app/stores/FriendStores/onlineFriendsStore";
 
 interface ArrFriend {
     id: number;
@@ -23,19 +24,23 @@ function RightBarClient({FriendsArr}: Props) {
     const [friendsAll, setAllFriends] = useState<ArrFriend[]>(FriendsArr);
 
     const AllPending = usePendingStore((s) => s.AllPending);
+    const addOnline = useOnlineFriendsIdStore((s) => s.addOnline);
 
     const socket = useSocket();
     useEffect(() => {
         if (!socket) return;
 
-        const onAdopted = (profile: ArrFriend) => setAllFriends((prev) => [...prev, profile]);
+        const onAdopted = (profile: ArrFriend) => {
+            setAllFriends((prev) => [...prev, profile]);
+            addOnline(profile.id);
+        };
 
         socket.on('AdoptedProfile', onAdopted);
 
         return () => {
             socket.off('AdoptedProfile', onAdopted);
         };
-    }, [socket, setAllFriends]);
+    }, [socket, setAllFriends,addOnline]);
 
     const handleAddOrNot = useHandleAddOrNot(setAllFriends);
 

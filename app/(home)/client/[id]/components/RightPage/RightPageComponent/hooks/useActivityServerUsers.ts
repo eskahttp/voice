@@ -1,6 +1,6 @@
 import {Dispatch, SetStateAction, useEffect} from "react";
 import {Socket} from "socket.io-client";
-import {useOnlineServersUserStore} from "@/app/stores/ServersStore/serversStore";
+import {useOnlineServersUserStore} from "@/app/stores/ServersStore/onlineUsersOnServerStore";
 
 
 interface Message { id: string; nickname: string; message: string; created_at: string; }

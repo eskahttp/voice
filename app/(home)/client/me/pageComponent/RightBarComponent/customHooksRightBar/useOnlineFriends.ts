@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import {useOnlineFriendsIdStore} from "@/app/stores/FriendStores/friendsIdStore";
+import {useOnlineFriendsIdStore} from "@/app/stores/FriendStores/onlineFriendsStore";
 import {Socket} from "socket.io-client";
 
 export function useOnlineFriendsSocket(socket:Socket | null) {
@@ -9,14 +9,14 @@ export function useOnlineFriendsSocket(socket:Socket | null) {
     useEffect(() => {
         if (!socket) return;
 
-        const { addOnline, removeOnline, setOnline , setFriends } =
+        const { addOnline, removeOnline, setOnline , setIdFriends } =
             useOnlineFriendsIdStore.getState();
 
         const onCame = (id: number) => addOnline(id);
 
         const onList = (ids: {onlineFriendIds: number[], allFriends: number[]}) => {
             setOnline(ids.onlineFriendIds);
-            setFriends(ids.allFriends);
+            setIdFriends(ids.allFriends);
         };
 
         const onOffline = (id: number) => removeOnline(id);
