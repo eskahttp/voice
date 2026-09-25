@@ -6,6 +6,7 @@ import Link from "next/link";
 import {CreateServer} from "@/app/global/leftbar/components/action/CreateServer";
 import {JoinServerAction} from "@/app/global/leftbar/components/clientcomponent/ServersUserAction/JoinServer";
 import {useParams} from "next/navigation";
+import {BsFillPlusCircleFill} from "react-icons/bs";
 
 interface Props {
     ServerBar: {
@@ -49,11 +50,11 @@ function AddServer({ServerBar}: Props){
             const isActive = serverId === item.id;
 
             const commonClasses = `w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold transition-all cursor-pointer hover:bg-gradient-to-r from-teal-500 to-cyan-600 select-none ${
-                isActive ? 'bg-gradient-to-r from-teal-500 to-cyan-600' : 'bg-[#121212]'
+                isActive ? 'bg-gradient-to-r from-teal-500 to-cyan-600' : 'bg-[#161616]'
             }`;
 
                 return (
-                    <div key={item.id} className="mb-1">
+                    <div key={item.id} className="mb-2">
                         {isActive ? (
                             <div className={commonClasses}>
                                 {item.name.slice(0, 4)}
@@ -68,8 +69,8 @@ function AddServer({ServerBar}: Props){
         })}
 
         <div onClick={()=>setFilterServer('CreateServer')}
-            className={"inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#121212] border border-neutral-700 text-white cursor-pointer hover:bg-gradient-to-r from-teal-500 to-cyan-600"}>
-            +
+            className={'w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold transition-all bg-[#161616] cursor-pointer hover:bg-gradient-to-r from-teal-500 to-cyan-600 select-none '}>
+            <BsFillPlusCircleFill className="w-6 h-6" />
         </div>
 
 

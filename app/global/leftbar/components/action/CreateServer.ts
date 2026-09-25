@@ -11,7 +11,7 @@ export async function CreateServer(formData: FormData): Promise< {message: strin
     const ip = await getClientIp();
 
     const { allowed } = rateLimit({
-        action: 'login',
+        action: 'CreateServer',
         identifier: ip,
         limit: 5,
         windowMs: 6 * 60 * 1000,

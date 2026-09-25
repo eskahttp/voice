@@ -1,4 +1,6 @@
 import {Participant} from "livekit-client";
+import {PiMicrophoneSlashFill} from "react-icons/pi";
+import {MdVolumeUp} from "react-icons/md";
 
 interface Props {
     onClick?: () => void;
@@ -18,19 +20,7 @@ function ButtonComponent({onClick,active,name,participants,isMicOn}: Props){
                     : 'hover:bg-white/5 text-gray-400'
             }`}
         >
-            <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-            >
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
-                />
-            </svg>
+            <MdVolumeUp className={'w-6 h-6'} />
             {name}
         </button>
 
@@ -54,7 +44,7 @@ function ButtonComponent({onClick,active,name,participants,isMicOn}: Props){
                         <span className="truncate flex-1">
                                 {p.name || p.identity}
                             </span>
-                        {!isMicOn(p) && <span> 🔇 </span>}
+                        {!isMicOn(p) && <span> <PiMicrophoneSlashFill/> </span>}
                     </li>
                 )})}
             </ul>

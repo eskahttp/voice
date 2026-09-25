@@ -1,5 +1,7 @@
 'use client';
 
+import {FaMagnifyingGlass} from "react-icons/fa6";
+
 interface ArrFriend {
     id: number;
     nickname: string;
@@ -17,7 +19,7 @@ function PendingFriend({ ArrPending, handleAddOrNot }: Props) {
         <div className="flex-1 min-w-0 overflow-y-auto px-8 py-4">
             <div className="relative mb-6">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                    🔍
+                    <FaMagnifyingGlass />
                 </span>
                 <input
                     type="text"

@@ -1,4 +1,5 @@
 import React from "react";
+import {UserGroup} from "lucide-react";
 
 type Filter = 'online' | 'all' | 'add' | 'pending';
 
@@ -26,7 +27,7 @@ function RightPageTSX({ filter ,setFilter, AllPending }: Props){
     return (<div className="h-12 border-b border-[#232428] flex items-center justify-between px-4 shrink-0">
         <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-white">
-                <span>👥</span>
+                <UserGroup />
                 <span className="font-semibold">Friends</span>
             </div>
             <div className="w-px h-6 bg-[#232428]" />
