@@ -78,7 +78,7 @@ io.on('connection', async (socket) => {
         disconnectTimers.delete(socket.data.userId);
     }
 
-    const wasOffline = !onlineUsers.has(userId);
+    const wasOffline = !onlineUsers.has(socket.data.userId);
     if (wasOffline) {
         onlineUsers.set(userId, new Set());
     }
@@ -90,11 +90,11 @@ io.on('connection', async (socket) => {
             `SELECT user_id2 AS friend_id FROM friends WHERE user_id1 = $1
          UNION
          SELECT user_id1 AS friend_id FROM friends WHERE user_id2 = $1`,
-            [userId]
+            [socket.data.userId]
         ),
         pool.query(
             `SELECT server_id FROM server_users WHERE user_id = $1`,
-            [userId]
+            [socket.data.userId]
         )
     ]);
     const friendsRows = friendsResult.rows;
@@ -158,11 +158,22 @@ io.on('connection', async (socket) => {
         }
     });
 
-    socket.on('AdoptedProfile', (PendingFriendId) => {
+    socket.on('AdoptedProfile',async (PendingFriendId) => {
         const targetSockets = onlineUsers.get(PendingFriendId);
+        const mySockets = onlineUsers.get(socket.data.userId);
         if (!targetSockets) return;
 
-            io.to([...targetSockets]).emit('AdoptedProfile', socket.data.user);
+        const { rows } = await pool.query(
+            `SELECT 1 FROM friends 
+         WHERE (user_id1 = $1 AND user_id2 = $2)
+            OR (user_id1 = $2 AND user_id2 = $1)
+         LIMIT 1`,
+            [socket.data.userId, PendingFriendId]
+        );
+        if (rows.length === 0) return;
+
+        io.to([...targetSockets]).emit('AdoptedProfile', socket.data.user);
+        io.to([...mySockets ]).emit('CameOnline', PendingFriendId);
     })
 
     socket.on('joinRoom', (serverId) => socket.join(serverId));
@@ -180,26 +191,51 @@ io.on('connection', async (socket) => {
         const userSockets = onlineUsers.get(socket.data.userId);
         if (!userSockets) return;
 
-        const disconnectTimer = setTimeout(()=>{
-            userSockets.delete(socket.id);
+        userSockets.delete(socket.id);
 
-            if (userSockets.size === 0) {
-                for (const fid of friendIds) {
+        if (userSockets.size > 0) return;
+
+        const disconnectTimer = setTimeout(async () => {
+            const current = onlineUsers.get(socket.data.userId);
+            if (!current || current.size > 0) {
+                disconnectTimers.delete(socket.data.userId);
+                return;
+            }
+
+            try {
+                const [freshFriends, freshServers] = await Promise.all([
+                    pool.query(
+                        `SELECT user_id2 AS friend_id FROM friends WHERE user_id1 = $1
+                     UNION
+                     SELECT user_id1 AS friend_id FROM friends WHERE user_id2 = $1`,
+                        [socket.data.userId]
+                    ),
+                    pool.query(
+                        `SELECT server_id FROM server_users WHERE user_id = $1`,
+                        [socket.data.userId]
+                    ),
+                ]);
+
+                const currentFriendIds = freshFriends.rows.map(r => Number(r.friend_id));
+                const currentServerIds = freshServers.rows.map(r => String(r.server_id));
+
+                for (const fid of currentFriendIds) {
                     const sockets = onlineUsers.get(fid);
                     if (sockets) {
                         io.to([...sockets]).emit('friendOffline', socket.data.userId);
                     }
                 }
 
-                for (const sid of serverIds) {
+                for (const sid of currentServerIds) {
                     io.to(sid).emit('deleteOnlineUser', socket.data.userId);
                 }
-
+            } catch (err) {
+                console.error('disconnect refresh error:', err);
+            } finally {
+                disconnectTimers.set(socket.data.userId, disconnectTimer);
                 onlineUsers.delete(socket.data.userId);
-                disconnectTimers.delete(socket.data.userId);
             }
-            }, 5000);
-        disconnectTimers.set(userId, disconnectTimer);
+        }, 5000);
     });
 });
 

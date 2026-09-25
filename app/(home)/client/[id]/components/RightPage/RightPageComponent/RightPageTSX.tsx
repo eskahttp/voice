@@ -3,7 +3,7 @@
 import MessageServer from "@/app/(home)/client/[id]/components/RightPage/MessageServer";
 import UserServer from "@/app/(home)/client/[id]/components/RightPage/UserServer";
 import { RefObject } from "react";
-import { useOnlineServersUserStore } from "@/app/stores/ServersStore/serversStore";
+import { useOnlineServersUserStore } from "@/app/stores/ServersStore/onlineUsersOnServerStore";
 
 interface Users { id: string; nickname: string; }
 interface Message { id: string; nickname: string; message: string; created_at: string; }

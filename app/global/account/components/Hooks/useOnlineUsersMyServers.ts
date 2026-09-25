@@ -1,6 +1,6 @@
 import {Socket} from "socket.io-client";
 import {useEffect} from "react";
-import {useOnlineServersUserStore} from "@/app/stores/ServersStore/serversStore";
+import {useOnlineServersUserStore} from "@/app/stores/ServersStore/onlineUsersOnServerStore";
 
 export const useOnlineUsersMyServers = (socket: Socket | null)=> {
 
