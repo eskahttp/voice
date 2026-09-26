@@ -13,7 +13,6 @@ interface Channel {
 interface Props {
     name: string;
     channels: Channel[];
-    nickname: string;
     RightPage: ReactNode;
     referal: string;
 }

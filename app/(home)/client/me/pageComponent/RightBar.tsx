@@ -51,7 +51,7 @@ function RightBarClient({FriendsArr}: Props) {
                 filter={filter}
                 friendsAll={friendsAll}
                 allPending={AllPending}
-                onAddOrNot={handleAddOrNot}
+                handleAddOrNot={handleAddOrNot}
             />
         </div>
     );
