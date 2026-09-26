@@ -3,6 +3,7 @@
 import { pool } from '@/app/lib/db';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
+import {redirect} from "next/navigation";
 
 const saltRounds = 12;
 
@@ -45,13 +46,12 @@ export async function createAccount(
         };
     }
 
-
     const { nickname, login, email, password } = validatedFields.data;
 
     const Nonickname = nickname.length === 0 ? 'null' : nickname;
     const checkLogin = await pool.query('SELECT login FROM users WHERE login = $1 ',[login])
     if (checkLogin.rows.length > 0) {
-        return { nickLogError: 'Такой логин уже есть' }
+        return { nickLogError: 'This username is already taken.' }
     }
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -61,5 +61,5 @@ export async function createAccount(
         [login ,Nonickname ,email, hashedPassword]
     );
 
-    return { message: 'Вы зарегестрировались' };
+    return redirect('/login');
 }

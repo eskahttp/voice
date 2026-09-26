@@ -5,7 +5,7 @@ import { pool } from '@/app/lib/db';
 import {redirect} from "next/navigation";
 
 
-export async function JoinServerAction(formData: FormData): Promise<void> {
+export async function JoinServerAction(formData: FormData): Promise<void | {message: string}> {
     const cookieStore = await cookies();
     const token = cookieStore.get('sessionToken')?.value;
 
@@ -19,6 +19,8 @@ export async function JoinServerAction(formData: FormData): Promise<void> {
     const ServerName = formData.get('ServerName');
 
     const Server = await pool.query('SELECT id FROM servers WHERE referal = $1', [ServerName])
+
+    if (!Server.rows[0]) return {message: 'The invite is invalid'}
 
     const ServerId = Server.rows[0].id;
 

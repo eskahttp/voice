@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 import LeftBar from "@/app/global/leftbar/leftbar";
 import AccountInfo from "@/app/global/account/account";
-import {TakeNickname} from "@/app/global/account/components/action/action";
-import {VoiceProvider} from "@/app/(home)/client/[id]/context/VoiceContext";
+import { TakeNickname } from "@/app/global/account/components/action/action";
+import VoiceConnection from "@/app/(home)/client/[id]/components/livekit/VoiceConnection";
 
 export const metadata: Metadata = {
     title: "DianaVoice",
@@ -18,14 +18,13 @@ export default async function NewLayout({
     const Nickname = await TakeNickname();
 
     return (
-        <VoiceProvider>
-            <div className="overflow-hidden">
+            <div className="h-screen w-screen overflow-hidden">
                 <LeftBar />
                 <AccountInfo Nickname={Nickname} />
-                <div className="ml-[72px] h-screen overflow-hidden">
+                <div className="ml-[72px] h-screen w-[calc(100vw-72px)] overflow-hidden">
                     {children}
                 </div>
+                <VoiceConnection Nickname={Nickname} />
             </div>
-        </VoiceProvider>
     );
 }

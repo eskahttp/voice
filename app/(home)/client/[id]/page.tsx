@@ -2,7 +2,6 @@ import ServerPage from "@/app/(home)/client/[id]/components/RightPage/ServerPage
 import { TakeChannelsAndServerName } from "@/app/(home)/client/[id]/components/Channels/action/buttonAction";
 import { TakeNickname } from "@/app/global/account/components/action/action";
 import RightPage from "@/app/(home)/client/[id]/components/RightPage/RightServerPage";
-import {TakeUserServer} from "@/app/(home)/client/[id]/components/RightPage/UserAction/ServerUser";
 import {getMessage} from "@/app/(home)/client/[id]/components/RightPage/UserAction/GetMessageServer";
 import {CheckUserOnServer} from "@/app/(home)/client/[id]/CheckUserServer/CheckAction/CheckUserAction";
 import ServerModal from "@/app/(home)/client/[id]/CheckUserServer/Component/CheckPage";
@@ -14,30 +13,26 @@ interface Props {
 async function Page({ params }: Props) {
     const { id } = await params;
 
-    const CheckUOnS: string = await CheckUserOnServer(id)
+    const CheckUOnS: number = await CheckUserOnServer(id)
 
-    const [{ serverName, channels }, nickname , UserServer, GetMessage] = await Promise.all([
+    const [{ serverName, channels }, nickname , GetMessage] = await Promise.all([
         TakeChannelsAndServerName(id),
         TakeNickname(),
-        TakeUserServer(id),
         getMessage(id)
     ]);
 
     return (
-        CheckUOnS === 'Yes' ?
+        CheckUOnS ?
     <ServerPage
         referal={serverName.referal}
         name={serverName.name}
         channels={channels}
         nickname={nickname}
         RightPage={
-            <RightPage
-                nickname={nickname}
-                serverId={id}
-                users={UserServer}
-                GetMessage={GetMessage}
-            />}
-    /> : <ServerModal
+            <RightPage nickname={nickname} serverId={id} GetMessage={GetMessage}/>}
+    />
+            :
+            <ServerModal
                 serverName={serverName.name}
                 ServerId={id}
             />

@@ -43,7 +43,7 @@ export async function LoginAccount(prevState: object, formData: FormData) {
         [login]
     );
 
-    if (!result.rows[0])
+    if (result.rows.length === 0)
         return { message: 'Incorrect username and/or password' };
 
     const isMatch = await bcrypt.compare(password, result.rows[0].password);

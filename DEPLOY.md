@@ -22,9 +22,8 @@ private bridge:
 ## Deploy
 
 ```bash
-# Code (never node_modules)
-tar cf - --exclude=node_modules --exclude=.git --exclude=.next . \
-  | ssh root@195.72.61.232 'mkdir -p /opt/voice && tar xf - -C /opt/voice'
+# Code: mirrors the tree, deletions included
+scripts/deploy-sync.sh root@195.72.61.232
 
 # Secrets: server only, never committed
 ssh root@195.72.61.232
@@ -120,9 +119,8 @@ rm deploy_key deploy_key.pub
 ## Деплой
 
 ```bash
-# Код (node_modules не копируем)
-tar cf - --exclude=node_modules --exclude=.git --exclude=.next . \
-  | ssh root@195.72.61.232 'mkdir -p /opt/voice && tar xf - -C /opt/voice'
+# Код: зеркалит дерево, вместе с удалениями
+scripts/deploy-sync.sh root@195.72.61.232
 
 # Секреты: только на сервере, в git не попадают
 ssh root@195.72.61.232
