@@ -161,7 +161,7 @@ io.on('connection', async (socket) => {
     socket.on('AdoptedProfile',async (PendingFriendId) => {
         const targetSockets = onlineUsers.get(PendingFriendId);
         const mySockets = onlineUsers.get(socket.data.userId);
-        if (!targetSockets) return;
+        if (targetSockets.size === 0 || !targetSockets) return
 
         const { rows } = await pool.query(
             `SELECT 1 FROM friends 
@@ -188,7 +188,7 @@ io.on('connection', async (socket) => {
     });
 
     socket.on('disconnect', () => {
-        const userSockets = onlineUsers.get(socket.data.userId);
+        const userSockets = onlineUsers.get(userId);
         if (!userSockets) return;
 
         userSockets.delete(socket.id);
@@ -196,9 +196,9 @@ io.on('connection', async (socket) => {
         if (userSockets.size > 0) return;
 
         const disconnectTimer = setTimeout(async () => {
-            const current = onlineUsers.get(socket.data.userId);
+            const current = onlineUsers.get(userId);
             if (!current || current.size > 0) {
-                disconnectTimers.delete(socket.data.userId);
+                disconnectTimers.delete(userId);
                 return;
             }
 
@@ -208,11 +208,11 @@ io.on('connection', async (socket) => {
                         `SELECT user_id2 AS friend_id FROM friends WHERE user_id1 = $1
                      UNION
                      SELECT user_id1 AS friend_id FROM friends WHERE user_id2 = $1`,
-                        [socket.data.userId]
+                        [userId]
                     ),
                     pool.query(
                         `SELECT server_id FROM server_users WHERE user_id = $1`,
-                        [socket.data.userId]
+                        [userId]
                     ),
                 ]);
 
@@ -222,20 +222,21 @@ io.on('connection', async (socket) => {
                 for (const fid of currentFriendIds) {
                     const sockets = onlineUsers.get(fid);
                     if (sockets) {
-                        io.to([...sockets]).emit('friendOffline', socket.data.userId);
+                        io.to([...sockets]).emit('friendOffline', userId);
                     }
                 }
 
                 for (const sid of currentServerIds) {
-                    io.to(sid).emit('deleteOnlineUser', socket.data.userId);
+                    io.to(sid).emit('deleteOnlineUser', userId);
                 }
             } catch (err) {
                 console.error('disconnect refresh error:', err);
             } finally {
-                disconnectTimers.set(socket.data.userId, disconnectTimer);
-                onlineUsers.delete(socket.data.userId);
+                onlineUsers.delete(userId);
             }
         }, 5000);
+
+        disconnectTimers.set(userId, disconnectTimer);
     });
 });
 
