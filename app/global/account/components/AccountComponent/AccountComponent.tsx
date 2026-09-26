@@ -1,3 +1,5 @@
+'use client';
+
 import { Room } from 'livekit-client';
 import { useOnlineFriendsSocket } from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useOnlineFriends";
 import { useSocket } from "@/app/CustomHooks/socket";
@@ -5,6 +7,8 @@ import {Settings} from "lucide-react";
 import {FaHeadphones, FaMicrophone} from "react-icons/fa";
 import {PiMicrophoneSlashFill} from "react-icons/pi";
 import {FiChevronDown} from "react-icons/fi";
+import {useState} from "react";
+import SettingsModal from "@/app/global/account/components/AccountComponent/SettingsModal";
 
 interface Props {
     Nickname: string;
@@ -19,12 +23,14 @@ function AccountComponent({
                               Nickname, activeRoomId, activeRoomName,
                               toggleMic, room, micEnabled
                           }: Props) {
+
+    const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+
     const socket = useSocket();
     useOnlineFriendsSocket(socket);
 
-    return (
+    return (<div onContextMenu={(e) => e.preventDefault()} >
         <div
-            onContextMenu={(e) => e.preventDefault()}
             className="w-full px-2 py-2"
         >
             <div className="flex items-center gap-1 px-1 py-1">
@@ -84,13 +90,15 @@ function AccountComponent({
                 </div>
 
                 <button
+                    onClick={() => setSettingsOpen(true)}
                     className="w-8 h-8 rounded-lg hover:bg-[#35373c] text-gray-300 flex items-center justify-center shrink-0 cursor-pointer"
                 >
                     <Settings className="w-4 h-4" />
                 </button>
             </div>
         </div>
-    );
+        {settingsOpen && (<SettingsModal onClose={() => setSettingsOpen(false)}/>)}
+    </div>);
 }
 
 export default AccountComponent;

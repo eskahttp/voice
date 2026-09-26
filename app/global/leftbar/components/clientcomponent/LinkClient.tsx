@@ -61,7 +61,7 @@ export default function HomeLink({ArrPending}: Props) {
                 >
                     <FaHome className={'w-6 h-6'} />
                     {pendingCount > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center bg-red-500 text-white rounded-full text-[13px] font-bold w-[22px] h-[22px] leading-none border-2 border-[#1e1e1e]">
+                        <span className="absolute top-7 -right-1.5 inline-flex items-center justify-center bg-red-500 text-white rounded-full text-[13px] font-bold w-[22px] h-[22px] leading-none border-2 border-[#1e1e1e]">
                             {pendingCount}
                         </span>
                     )}

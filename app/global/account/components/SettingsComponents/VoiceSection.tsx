@@ -160,9 +160,9 @@ export default function VoiceSection() {
 
             <p className="text-sm text-[#b5bac1]">
                 Need help? Check out our{" "}
-                <a href="#" className="text-[#00a8fc] hover:underline">
+                <span className="text-[#00a8fc] hover:underline">
                     troubleshooting guide
-                </a>
+                </span>
                 .
             </p>
         </>

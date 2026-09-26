@@ -160,8 +160,9 @@ io.on('connection', async (socket) => {
 
     socket.on('AdoptedProfile',async (PendingFriendId) => {
         const targetSockets = onlineUsers.get(PendingFriendId);
+        if (!targetSockets || targetSockets.size === 0) return
+
         const mySockets = onlineUsers.get(socket.data.userId);
-        if (targetSockets.size === 0 || !targetSockets) return
 
         const { rows } = await pool.query(
             `SELECT 1 FROM friends 
@@ -229,10 +230,10 @@ io.on('connection', async (socket) => {
                 for (const sid of currentServerIds) {
                     io.to(sid).emit('deleteOnlineUser', userId);
                 }
+
+                onlineUsers.delete(userId);
             } catch (err) {
                 console.error('disconnect refresh error:', err);
-            } finally {
-                onlineUsers.delete(userId);
             }
         }, 5000);
 

@@ -13,16 +13,16 @@ interface Props {
     filter: 'online' | 'all' | 'add' | 'pending';
     friendsAll: ArrFriend[];
     allPending: ArrFriend[];
-    onAddOrNot: (accept: boolean, id: number) => void;
+    handleAddOrNot: (accept: boolean, id: number) => void;
 }
 
-export function RightBarContent({ filter, friendsAll, allPending, onAddOrNot }: Props) {
+export function RightBarContent({ filter, friendsAll, allPending, handleAddOrNot }: Props) {
     const onlineIds = useOnlineFriendsIdStore(state => state.onlineIds)
 
 
     if (filter === 'add') return <AddFriend />;
     if (filter === 'pending')
-        return <PendingFriend handleAddOrNot={onAddOrNot} ArrPending={allPending} />;
+        return <PendingFriend handleAddOrNot={handleAddOrNot} ArrPending={allPending} />;
 
     const list =
         filter === 'online'
