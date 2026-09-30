@@ -57,8 +57,8 @@ export async function createAccount(
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     await pool.query(
-        'INSERT INTO users (login, nickname, email, password) VALUES ($1, $2, $3, $4)',
-        [login ,Nonickname ,email, hashedPassword]
+        'INSERT INTO users (login, nickname, email, password, avatar_url) VALUES ($1, $2, $3, $4, $5)',
+        [login ,Nonickname ,email, hashedPassword, '/amomain1.png']
     );
 
     return redirect('/login');

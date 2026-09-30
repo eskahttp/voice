@@ -22,7 +22,7 @@ export async function AddOrNotFriend(AccOrIgn: boolean, PendingId: number){
 
        await pool.query('DELETE FROM friendships WHERE addressee_id = $1 AND requester_id = $2', [CookieId, Number(PendingId)])
 
-        const ProfileFriend = await pool.query('SELECT id,login,nickname FROM users WHERE id = $1',[Number(PendingId)])
+        const ProfileFriend = await pool.query('SELECT id,login,nickname,avatar_url FROM users WHERE id = $1',[Number(PendingId)])
         return ProfileFriend.rows[0]
     }
     else {

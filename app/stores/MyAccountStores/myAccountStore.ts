@@ -13,6 +13,8 @@ interface MyAccountStore {
     setNickname: (nickname: string) => void;
     email: string;
     setEmail: (email: string) => void;
+    avatar_url: string;
+    setAvatarUrl: (avatar_url: string) => void;
 }
 
 export const useMyAccountStore = create<MyAccountStore>((set) => ({
@@ -22,4 +24,6 @@ export const useMyAccountStore = create<MyAccountStore>((set) => ({
     setNickname: (nickname: string) => set({ nickname }),
     email: "",
     setEmail: (email: string) => set({ email }),
+    avatar_url: "",
+    setAvatarUrl: (avatar_url: string) => set({ avatar_url }),
 }));

@@ -20,7 +20,10 @@ export const up = (pgm) => {
             notNull: true,
             default: pgm.func('current_timestamp'),
         },
+        avatar_url: { type: 'TEXT' },
     }, { ifNotExists: true });
+
+    pgm.createIndex('users','id',{ name: 'idx_users_id' });
 
     pgm.createTable('session', {
         id: 'id',

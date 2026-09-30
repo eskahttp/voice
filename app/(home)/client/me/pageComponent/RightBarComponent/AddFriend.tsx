@@ -63,7 +63,7 @@ const AddFriend: React.FC = () => {
                             width={190}
                             height={190}
                             unoptimized
-                            className="shrink-0"
+                            className="shrink-0 h-auto"
                         />
                     </div>
                     <div className={`flex items-center bg-[#1e1f22] rounded-lg p-1.5 border transition-colors ${getBorderClass()}`}>

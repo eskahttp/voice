@@ -1,8 +1,11 @@
 import React from "react";
+import Image from "next/image";
 
 interface Users {
-    id: string;
+    id: number;
+    login: string;
     nickname: string;
+    avatar_url: string;
 }
 
 interface Props {
@@ -20,9 +23,12 @@ function UserServer({ userList, onlineIds }: Props) {
             className={`flex items-center gap-3 rounded p-1 hover:bg-[#35373c] ${!isOnline ? 'opacity-50' : ''}`}
         >
             <div className="relative">
-                <div className="h-8 w-8 overflow-hidden rounded-full bg-gray-700">
-                    123
-                </div>
+                <Image
+                    width={47}
+                    height={47}
+                    src={u.avatar_url}
+                    alt={'Photo'}
+                    className="h-9 w-9 overflow-hidden rounded-full"/>
                 {isOnline &&<div
                     className={'absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#2b2d31] bg-green-500'}
                 />}

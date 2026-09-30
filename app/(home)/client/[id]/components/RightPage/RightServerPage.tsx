@@ -6,7 +6,7 @@ import { useSocket } from "@/app/CustomHooks/socket";
 import {FormSubmit} from "@/app/(home)/client/[id]/components/RightPage/RightPageComponent/SendingMessageFn";
 import {useActivityServerUsers} from "@/app/(home)/client/[id]/components/RightPage/RightPageComponent/hooks/useActivityServerUsers";
 
-interface User { id: string; nickname: string; }
+interface User { id: number; login:string; nickname: string; avatar_url: string; }
 interface Message { id: string; nickname: string; message: string; created_at: string; }
 interface Props { serverId: string; GetMessage: Message[];}
 
@@ -24,7 +24,6 @@ function RightPage({serverId, GetMessage }: Props) {
     useEffect(() => {
         if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }, [message]);
-
 
     return (
         <RightClient

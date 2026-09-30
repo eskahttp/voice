@@ -5,8 +5,8 @@ import UserServer from "@/app/(home)/client/[id]/components/RightPage/UserServer
 import { RefObject } from "react";
 import { useOnlineServersUserStore } from "@/app/stores/ServersStore/onlineUsersOnServerStore";
 
-interface Users { id: string; nickname: string; }
-interface Message { id: string; nickname: string; message: string; created_at: string; }
+interface Users { id: number; login:string; nickname: string; avatar_url:string; }
+interface Message { id: string; nickname: string; message: string; created_at: string; avatar_url:string; }
 interface Props {
     userList: Users[];
     SubmitAction: (formData: FormData) => void;
@@ -32,6 +32,7 @@ function RightClient({ userList, SubmitAction, message, scrollRef }: Props) {
                         {message.map(mes => (
                             <MessageServer
                                 key={mes.id}
+                                photo={mes.avatar_url}
                                 message={mes.message}
                                 nickname={mes.nickname}
                                 created_at={mes.created_at}
