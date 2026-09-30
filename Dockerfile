@@ -104,6 +104,9 @@ COPY --from=builder --chown=node:node /app/public ./public
 # Set the correct permission for prerender cache
 RUN mkdir .next && chown node:node .next
 
+# Create uploads directory with correct permissions
+RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
+
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=node:node /app/.next/standalone ./
@@ -126,5 +129,4 @@ USER node
 EXPOSE 3000
 
 # Start Next.js standalone server
-RUN mkdir -p /app/uploads && chmod 777 /app/uploads
 CMD ["node", "server.mjs"]
