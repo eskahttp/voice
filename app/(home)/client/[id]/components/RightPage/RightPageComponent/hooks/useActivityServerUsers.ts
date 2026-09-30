@@ -3,7 +3,7 @@ import {Socket} from "socket.io-client";
 import {useOnlineServersUserStore} from "@/app/stores/ServersStore/onlineUsersOnServerStore";
 
 
-interface Message { id: string; nickname: string; message: string; created_at: string; }
+interface Message { id: string; login:string; nickname: string; avatar_url: string; message: string; created_at: string; }
 interface User { id: number; login:string; nickname: string; avatar_url: string; }
 
 export function useActivityServerUsers(socket: Socket|null,

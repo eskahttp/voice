@@ -13,6 +13,7 @@ interface ArrFriend {
     id: number;
     nickname: string;
     login: string;
+    avatar_url: string;
 }
 
 async function LeftBar() {

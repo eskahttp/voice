@@ -4,7 +4,14 @@ import { pool } from '@/app/lib/db';
 import { cookies } from 'next/headers';
 import {redirect} from "next/navigation";
 
-export async function CheckPendingFriend(){
+interface PendingFriend {
+    id: number;
+    nickname: string;
+    login: string;
+    avatar_url: string;
+}
+
+export async function CheckPendingFriend():Promise<PendingFriend[]>{
     const cookieStore = await cookies();
     const token = cookieStore.get('sessionToken')?.value;
 
