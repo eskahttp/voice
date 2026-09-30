@@ -126,4 +126,5 @@ USER node
 EXPOSE 3000
 
 # Start Next.js standalone server
+RUN mkdir -p /app/uploads && chmod 777 /app/uploads
 CMD ["node", "server.mjs"]
