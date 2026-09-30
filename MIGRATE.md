@@ -25,7 +25,8 @@ Everything runs from the developer machine. `OLD` and `NEW` are the two hosts.
 ## 1. Order the box
 
 Ubuntu 24.04, ≥2 GB RAM, ≥30 GB disk. The Next.js build runs on the box and
-needs the RAM; Docker build cache eats the disk (`docker builder prune` reclaims it).
+needs the RAM. Uncapped, Docker's build cache filled 9 GB on the old box;
+`daemon.json` (step 3) caps it.
 
 The host must be reachable from RU: most users are there. RU-hosted boxes or
 TSPU-clean foreign ASNs work. Vultr, DigitalOcean, Hetzner, OVH do not.
@@ -57,7 +58,7 @@ Copy these from OLD unchanged:
 |---|---|
 | `/etc/sysctl.d/99-tuning.conf` | UDP buffers, conntrack size, reserves LiveKit's port range |
 | `/etc/sysctl.d/99-swap.conf` | swappiness 10 |
-| `/etc/docker/daemon.json` | log rotation, no userland-proxy |
+| `/etc/docker/daemon.json` | log rotation, no userland-proxy, build cache capped at 3 GB |
 | `/etc/fail2ban/jail.local` | sshd jail, bans via ufw |
 
 Then: install `ufw fail2ban unattended-upgrades rsync` and Docker from
@@ -200,7 +201,8 @@ SporeStack Stockholm `195.72.61.232` → ER-Telecom Moscow `93.183.104.169`.
 ## 1. Заказать сервер
 
 Ubuntu 24.04, ≥2 ГБ RAM, ≥30 ГБ диска. Сборка Next.js идёт на самом сервере и
-требует памяти; кэш сборки Docker занимает диск (`docker builder prune` освобождает).
+требует памяти. Без ограничения кэш сборки Docker занял 9 ГБ на старом сервере;
+`daemon.json` (шаг 3) его ограничивает.
 
 Сервер должен быть доступен из РФ: большинство пользователей там. Подходят
 российские хостеры или зарубежные ASN без блокировок ТСПУ. Vultr, DigitalOcean,
@@ -233,7 +235,7 @@ sshd -T | grep passwordauth                          # должно быть: no
 |---|---|
 | `/etc/sysctl.d/99-tuning.conf` | UDP-буферы, размер conntrack, резерв портов LiveKit |
 | `/etc/sysctl.d/99-swap.conf` | swappiness 10 |
-| `/etc/docker/daemon.json` | ротация логов, без userland-proxy |
+| `/etc/docker/daemon.json` | ротация логов, без userland-proxy, кэш сборки не больше 3 ГБ |
 | `/etc/fail2ban/jail.local` | jail для sshd, баны через ufw |
 
 Затем: установи `ufw fail2ban unattended-upgrades rsync` и Docker из

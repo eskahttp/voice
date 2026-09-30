@@ -34,7 +34,10 @@ jobs:
       - name: Build and restart
         run: |
           ssh "$DEPLOY_HOST" 'cd /opt/voice \
-            && docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build'
+            && docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build \
+            && docker image prune -f'
+          # Build cache is capped by BuildKit GC in /etc/docker/daemon.json;
+          # this drops the image each rebuild leaves behind (~600 MB).
 
       - name: Smoke test
         run: |
