@@ -31,10 +31,13 @@ services:
     environment:
       NODE_ENV: production
       PORT: "3000"
+      UPLOAD_DIR: /app/uploads
     env_file:
       - .env.docker
     ports:
       - "3000:3000"
+    volumes:
+      - ./uploads:/app/uploads
     restart: unless-stopped
 
   db:
