@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AddInServer } from "@/app/(home)/client/[id]/CheckUserServer/Component/JoinServerAction/JoinAction";
 import { useSocket } from "@/app/CustomHooks/socket";
 
 interface ServerModalProps {
@@ -21,22 +20,8 @@ function ServerModal({ serverName, ServerId }: ServerModalProps) {
     };
 
     const handleJoin = async () => {
-        const newUser = await AddInServer(ServerId);
-
-        // const d = new Date();
-        // const hours = String(d.getHours()).padStart(2, '0');
-        // const minutes = String(d.getMinutes()).padStart(2, '0');
-
-        if (socket && newUser) {
-            socket.emit('userJoinedServer', { serverId: ServerId, user: newUser });
-            // socket.emit('message', {
-            //     serverId: ServerId,
-            //     id: crypto.randomUUID(),
-            //     nickname: '',
-            //     message: newUser.nickname + ' Has joined!',
-            //     created_at: `${hours}:${minutes}`
-            // });
-        }
+        if (!socket) return;
+        socket.emit('userJoinedServer', ServerId);
 
         router.refresh();
     };
@@ -48,14 +33,14 @@ function ServerModal({ serverName, ServerId }: ServerModalProps) {
             <div className="relative w-full max-w-md mx-4 rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl p-6">
                 <button
                     onClick={handleClose}
-                    className="absolute top-4 right-4 text-neutral-500 hover:text-white transition-colors"
+                    className="absolute top-4 right-4 text-neutral-500 hover:text-white transition-colors cursor-pointer"
                     aria-label="Закрыть"
                 >
                     ✖
                 </button>
 
                 <div className="mb-6">
-                    <p className="text-sm text-neutral-400 mb-1">Присоединиться к серверу</p>
+                    <p className="text-sm text-neutral-400 mb-1">Join the server</p>
                     <h2 className="text-2xl font-bold text-white truncate">{serverName}</h2>
                 </div>
 
@@ -74,7 +59,7 @@ function ServerModal({ serverName, ServerId }: ServerModalProps) {
                     onClick={handleJoin}
                     className="w-full py-3 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold transition-colors shadow-lg shadow-blue-600/20"
                 >
-                    Присоединиться
+                    Join
                 </button>
             </div>
         </div>

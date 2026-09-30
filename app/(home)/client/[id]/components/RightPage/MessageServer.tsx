@@ -1,16 +1,22 @@
+import Image from "next/image";
+
 interface Props {
     nickname: string
     message: string
     created_at: string
+    photo:string
 }
 
-function MessageServer({nickname,message,created_at}: Props) {
+function MessageServer({nickname,message,photo,created_at}: Props) {
     return (
         <div className="flex flex-col gap-4 px-4 py-2">
             <div className="flex gap-3 hover:bg-gray-800/40 -mx-4 px-4 py-1 transition-colors">
-                 <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gray-700 flex items-center justify-center text-xs text-gray-300">
-                    photo
-                </div>
+                 <Image
+                     src={photo}
+                     width={40}
+                     height={40}
+                     alt={'Photo'}
+                     className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gray-700 flex items-center justify-center text-xs text-gray-300"/>
                 <div className="flex flex-col min-w-0 flex-1">
                     <div className="flex items-baseline gap-2">
                         <span className="text-sm font-semibold text-white hover:underline cursor-pointer">

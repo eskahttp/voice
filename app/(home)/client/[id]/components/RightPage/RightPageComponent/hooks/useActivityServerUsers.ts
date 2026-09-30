@@ -4,7 +4,7 @@ import {useOnlineServersUserStore} from "@/app/stores/ServersStore/onlineUsersOn
 
 
 interface Message { id: string; nickname: string; message: string; created_at: string; }
-interface User { id: string; nickname: string; }
+interface User { id: number; login:string; nickname: string; avatar_url: string; }
 
 export function useActivityServerUsers(socket: Socket|null,
                                        serverId:string,
@@ -26,9 +26,9 @@ export function useActivityServerUsers(socket: Socket|null,
 
         const userJoinedHandler = (user: User) => {
             setUserList(prev => {
-                if (prev.some(u => u.id === user.id)) return prev;
                 return [...prev, user];
             });
+            addOnlineUser(user.id)
         };
 
         const setOfflineAndOnlineUsers = (AllUsersServer : {AllUsersServer: User[], OnlineUsersServer: number[]})=>{

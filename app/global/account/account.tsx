@@ -6,12 +6,14 @@ import {useRoomAndMicStore} from "@/app/stores/LiveKit/RoomAndMicStore";
 import {useMicrophoneEvents} from "@/app/global/account/components/Hooks/useMicrophoneEvents";
 import {AccountUpperInfo} from "@/app/global/account/components/AccountComponent/AccountUpperInfo";
 import {useSetMyInfoOnStore} from "@/app/global/account/components/Hooks/useSetMyInfoOnStore";
+import {useMyAccountStore} from "@/app/stores/MyAccountStores/myAccountStore";
 
 interface Props {
     UserInfo: {
         login: string;
         nickname: string;
         email: string;
+        avatar_url: string;
     }
 }
 
@@ -21,7 +23,7 @@ const clickAudio = typeof Audio !== "undefined"
 
 function AccountInfo({ UserInfo }: Props): JSX.Element {
 
-    useSetMyInfoOnStore(UserInfo.login, UserInfo.nickname, UserInfo.email);
+    useSetMyInfoOnStore(UserInfo.login, UserInfo.nickname, UserInfo.email, UserInfo.avatar_url);
 
     const room = useRoomAndMicStore((state) => state.room);
     const setRoom = useRoomAndMicStore((state) => state.setRoom);
@@ -32,6 +34,8 @@ function AccountInfo({ UserInfo }: Props): JSX.Element {
 
     const microphone = useRoomAndMicStore((state) => state.microphone);
     const setMicrophone = useRoomAndMicStore((state) => state.setMicrophone);
+
+    const myAvatar = useMyAccountStore((state)=> state.avatar_url)
 
     useEffect(() => {
         try {
@@ -73,6 +77,7 @@ function AccountInfo({ UserInfo }: Props): JSX.Element {
             AccountInfo={
             <AccountComponent
                 Nickname={UserInfo.nickname}
+                Avatar={myAvatar}
                 activeRoomId={ActiveRoomId}
                 activeRoomName={ActiveRoomName}
                 toggleMic={toggleMic}

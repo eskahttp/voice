@@ -59,7 +59,7 @@ io.on('connection', async (socket) => {
 
 
     const { rows } = await pool.query(
-        `SELECT u.id, u.login, u.nickname 
+        `SELECT u.id, u.login, u.nickname ,u.avatar_url 
          FROM session s 
          JOIN users u ON u.id = s.login_id 
          WHERE s.cookie = $1`,
@@ -122,11 +122,16 @@ io.on('connection', async (socket) => {
         }
     }
 
+    socket.on('avatarChanged', (avatarChanged)=> {
+        if (typeof avatarChanged !== 'string') return;
+        socket.data.user.avatar_url = avatarChanged;
+    })
+
     socket.on('getServerUsers', async(serverId)=> {
         const CheckUserOnServer = await pool.query('SELECT user_id FROM server_users WHERE server_id = $1 AND user_id = $2', [serverId, socket.data.userId])
         if (CheckUserOnServer.rows.length === 0) return;
 
-        const AllUsersServerQuery = await pool.query('SELECT u.id, u.nickname\n' +
+        const AllUsersServerQuery = await pool.query('SELECT u.id, u.nickname,u.login ,u.avatar_url\n' +
             'FROM users u\n' +
             'INNER JOIN server_users su ON su.user_id = u.id\n' +
             'WHERE su.server_id = $1;', [serverId])
@@ -194,14 +199,27 @@ io.on('connection', async (socket) => {
 
         io.to(serverId).emit('message', {
             id: messId.rows[0].id,
+            login: socket.data.user.login,
+            avatar_url: socket.data.user.avatar_url,
             nickname: socket.data.user.nickname,
             message: messageStr,
             created_at: `${hours}:${minutes}`
         });
     });
 
-    socket.on('userJoinedServer', ({ serverId, user }) => {
-        io.to(serverId).emit('userJoined', user);
+    socket.on('userJoinedServer', async( serverId ) => {
+        try {
+            await pool.query(
+                'INSERT INTO server_users (server_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+                [serverId, socket.data.userId]
+            );
+        }
+        catch (err) {
+            console.error('userJoinedServer error:', err);
+            return;
+        }
+
+        io.to(serverId).emit('userJoined', socket.data.user);
     });
 
     socket.on('disconnect', () => {

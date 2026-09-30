@@ -1,11 +1,13 @@
 'use client';
 
 import {FaMagnifyingGlass} from "react-icons/fa6";
+import Image from "next/image";
 
 interface ArrFriend {
     id: number;
     nickname: string;
     login: string;
+    avatar_url: string;
 }
 
 interface Props {
@@ -41,9 +43,12 @@ function PendingFriend({ ArrPending, handleAddOrNot }: Props) {
                         key={friend.id}
                         className="group flex items-center justify-between py-3 border-b border-[#232428] hover:bg-[#1a1b1e] px-2 rounded-md transition">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-[#232428] overflow-hidden flex items-center justify-center text-gray-300 font-semibold">
-                                {friend.nickname.charAt(0).toUpperCase()}
-                            </div>
+                            <Image
+                                width={40}
+                                height={40}
+                                alt={'Photo'}
+                                src={friend.avatar_url}
+                                className="w-10 h-10 rounded-full bg-[#232428] overflow-hidden flex items-center justify-center text-gray-300 font-semibold"/>
                             <div className="flex flex-col">
                                 <span className="text-sm font-semibold text-gray-100">
                                     {friend.nickname}

@@ -9,9 +9,11 @@ import {PiMicrophoneSlashFill} from "react-icons/pi";
 import {FiChevronDown} from "react-icons/fi";
 import {useState} from "react";
 import SettingsModal from "@/app/global/account/components/AccountComponent/SettingsModal";
+import Image from "next/image";
 
 interface Props {
     Nickname: string;
+    Avatar: string;
     activeRoomId: string | null;
     activeRoomName: string | null;
     toggleMic: () => void;
@@ -20,7 +22,7 @@ interface Props {
 }
 
 function AccountComponent({
-                              Nickname, activeRoomId, activeRoomName,
+                              Nickname,Avatar ,activeRoomId, activeRoomName,
                               toggleMic, room, micEnabled
                           }: Props) {
 
@@ -35,11 +37,16 @@ function AccountComponent({
         >
             <div className="flex items-center gap-1 px-1 py-1">
                 <div className="flex items-center gap-2 flex-1 min-w-0 hover:bg-[#35373c] rounded-lg px-1 py-1 cursor-pointer">
-                    <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                        {Nickname[0]?.toUpperCase() || 'С'}
-                    </div>
+                    <Image
+                        src={Avatar ? Avatar : '/amomain1.png'}
+                        width={50}
+                        height={50}
+                        className="w-10 h-10 rounded-full flex items-center justify-center font-bold shrink-0"
+                        alt={'Avatar'}
+                        priority
+                    />
                     <div className="min-w-0">
-                        <div className="text-xs text-white font-medium truncate">
+                        <div className="text-sm text-white font-medium truncate">
                             {Nickname}
                         </div>
                         <div className="text-[11px] text-gray-400 truncate">

@@ -4,7 +4,7 @@ import { pool } from '@/app/lib/db';
 import { cookies } from 'next/headers';
 import {redirect} from "next/navigation";
 
-export async function selectFriendAction(){
+export async function selectFriendAction(): Promise<{id: number, nickname: string, login: string, avatar_url: string}[]>{
     const cookieStore = await cookies();
     const token = cookieStore.get('sessionToken')?.value;
 
@@ -17,7 +17,7 @@ export async function selectFriendAction(){
     const UserId = UserIdQuerry.rows[0].login_id;
 
     const friendsList = await pool.query(
-        `SELECT u.id, u.nickname, u.login
+        `SELECT u.id, u.nickname, u.login,u.avatar_url
    FROM (
      SELECT user_id2 AS friend_id FROM friends WHERE user_id1 = $1
      UNION ALL

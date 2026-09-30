@@ -8,6 +8,7 @@ interface ArrFriend {
     id: number;
     nickname: string;
     login: string;
+    avatar_url: string;
 }
 
 export function useHandleAddOrNot(setAllFriends: Dispatch<SetStateAction<ArrFriend[]>>) {
