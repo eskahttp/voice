@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import {AddFriendAction} from "@/app/(home)/client/me/pageComponent/RightBarComponent/AddFriendAction/AddFriendAction";
 import {useSocket} from "@/app/CustomHooks/socket";
+import Image from "next/image";
 
 type ColorInput = 'red' | 'green' | 'none'
 
@@ -24,7 +25,7 @@ const AddFriend: React.FC = () => {
         setUsername('');
 
         if (MesAndColor.checkIt) {
-            if (!socket) return setUsername('');
+            if (!socket) return
             socket.emit('sendFriendRequest', username);
             setUsername('');
         }
@@ -47,14 +48,24 @@ const AddFriend: React.FC = () => {
     return (
         <div className="flex-1 overflow-y-auto px-8 py-6">
             <div className="max-w-6xl">
-                <div className="pb-5 border-b border-zinc-800">
-                    <h2 className="text-white text-xl font-bold mb-2">Add Friend</h2>
-                    <p className="text-zinc-400 text-sm">
-                        You can add friends with their DianaVoice login.
-                    </p>
-                </div>
 
-                <form action={handleSubmit} className="mt-6">
+                <form action={handleSubmit}>
+                    <div className="flex justify-between gap-2">
+                        <div className="flex-1 flex flex-col justify-end pb-8">
+                            <h2 className="text-white text-xl font-bold mb-2">Add Friend</h2>
+                            <p className="text-zinc-400 text-sm">
+                                You can add friends with their DianaVoice login.
+                            </p>
+                        </div>
+                        <Image
+                            src="/amoMy.png"
+                            alt="Amo"
+                            width={190}
+                            height={190}
+                            unoptimized
+                            className="shrink-0"
+                        />
+                    </div>
                     <div className={`flex items-center bg-[#1e1f22] rounded-lg p-1.5 border transition-colors ${getBorderClass()}`}>
                         <input
                             type="text"
@@ -63,7 +74,7 @@ const AddFriend: React.FC = () => {
                             onChange={(e) => {
                                 setUsername(e.target.value);
                                 if (AddFriendState.color !== 'none') {
-                                    setAddFriendState({message: '', color: 'none', checkIt: false});
+                                    setAddFriendState({ message: '', color: 'none', checkIt: false });
                                 }
                             }}
                             placeholder="Enter a username"
@@ -74,8 +85,8 @@ const AddFriend: React.FC = () => {
                             disabled={!isActive}
                             className={`shrink-0 px-4 py-2.5 rounded-md text-sm font-medium text-white whitespace-nowrap transition-colors ${
                                 isActive
-                                    ? 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer'
-                                    : 'bg-indigo-600/60 opacity-70 cursor-not-allowed'
+                                    ? 'bg-gradient-to-r from-teal-500 to-cyan-600 hover:shadow-[inset_0_10px_15px_-5px_rgba(0,0,0,0.25),inset_0_-10px_15px_-5px_rgba(0,0,0,0.25)] cursor-pointer'
+                                    : 'bg-gradient-to-r bg-teal-500/60 to-cyan-600/60 opacity-70 cursor-not-allowed'
                             }`}
                         >
                             Send Friend Request

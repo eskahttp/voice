@@ -24,7 +24,6 @@ export default function AvatarSection() {
             </p>
 
             <div className="flex items-center gap-6 mb-8">
-                {/* Preview */}
                 <div className="relative">
                     <div className="w-28 h-28 rounded-full bg-[#1e1f22] border-4 border-[#2b2d31] overflow-hidden flex items-center justify-center text-5xl">
                         {avatar ? (
@@ -48,7 +47,6 @@ export default function AvatarSection() {
                     </button>
                 </div>
 
-                {/* Actions */}
                 <div className="flex flex-col gap-2">
                     <button
                         onClick={() => inputRef.current?.click()}

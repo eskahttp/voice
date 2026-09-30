@@ -180,8 +180,24 @@ io.on('connection', async (socket) => {
     socket.on('joinRoom', (serverId) => socket.join(serverId));
     socket.on('leaveRoom', (serverId) => socket.leave(serverId));
 
-    socket.on('message', ({ serverId, ...msg }) => {
-        io.to(serverId).emit('message', msg);
+    socket.on('message', async ({ serverId, messageStr }) => {
+        const UserOnServer = await pool.query('SELECT server_id FROM server_users WHERE server_id = $1' +
+            ' AND user_id = $2', [serverId,socket.data.userId]);
+        if (UserOnServer.rows.length === 0) return
+
+        const messId = await pool.query('INSERT INTO message_user_server (server_id,user_id,message) VALUES ($1,$2,$3) RETURNING id',
+            [serverId,socket.data.userId,messageStr]);
+
+        const dat = new Date();
+        const hours = String(dat.getHours()).padStart(2, '0');
+        const minutes = String(dat.getMinutes()).padStart(2, '0');
+
+        io.to(serverId).emit('message', {
+            id: messId.rows[0].id,
+            nickname: socket.data.user.nickname,
+            message: messageStr,
+            created_at: `${hours}:${minutes}`
+        });
     });
 
     socket.on('userJoinedServer', ({ serverId, user }) => {

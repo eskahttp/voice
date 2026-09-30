@@ -5,7 +5,6 @@ import RightClient from "@/app/(home)/client/[id]/components/RightPage/RightPage
 import { useSocket } from "@/app/CustomHooks/socket";
 import {FormSubmit} from "@/app/(home)/client/[id]/components/RightPage/RightPageComponent/SendingMessageFn";
 import {useActivityServerUsers} from "@/app/(home)/client/[id]/components/RightPage/RightPageComponent/hooks/useActivityServerUsers";
-import {useMyAccountStore} from "@/app/stores/MyAccountStores/myAccountStore";
 
 interface User { id: string; nickname: string; }
 interface Message { id: string; nickname: string; message: string; created_at: string; }
@@ -13,8 +12,6 @@ interface Props { serverId: string; GetMessage: Message[];}
 
 function RightPage({serverId, GetMessage }: Props) {
     const [message, setMessage] = useState<Message[]>(GetMessage);
-
-    const nickname = useMyAccountStore((state)=> state.nickname)
 
     const [userList, setUserList] = useState<User[]>([]);
 
@@ -32,7 +29,7 @@ function RightPage({serverId, GetMessage }: Props) {
     return (
         <RightClient
             userList={userList}
-            SubmitAction={(formData:FormData)=> FormSubmit(formData,socket,serverId,nickname)}
+            SubmitAction={(formData:FormData)=> FormSubmit(formData,socket,serverId)}
             message={message}
             scrollRef={scrollRef}
         />
