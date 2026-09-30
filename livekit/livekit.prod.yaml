@@ -9,8 +9,8 @@ rtc:
   port_range_start: 50000
   port_range_end: 50100
 
-  # Without the eth0 pin LiveKit advertises Docker bridge IPs as ICE candidates.
+  # Without the ens3 pin LiveKit advertises Docker bridge IPs as ICE candidates.
   use_external_ip: false
   interfaces:
     includes:
-      - eth0
+      - ens3

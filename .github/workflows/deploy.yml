@@ -1,6 +1,6 @@
 # Requires two repository secrets (setup steps in DEPLOY.md):
 #   DEPLOY_SSH_KEY      private half of a dedicated ed25519 deploy key
-#   DEPLOY_KNOWN_HOSTS  output of: ssh-keyscan 195.72.61.232
+#   DEPLOY_KNOWN_HOSTS  output of: ssh-keyscan 93.183.104.169
 
 name: deploy
 
@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  DEPLOY_HOST: root@195.72.61.232
+  DEPLOY_HOST: root@93.183.104.169
 
 jobs:
   deploy:

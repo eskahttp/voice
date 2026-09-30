@@ -1,6 +1,7 @@
 # Deploying dianavoice.online
 
-Host: `root@195.72.61.232`, app dir `/opt/voice`.
+Host: `root@93.183.104.169`, app dir `/opt/voice`.
+Moving to another host: [MIGRATE.md](MIGRATE.md).
 
 ## Topology
 
@@ -23,10 +24,10 @@ private bridge:
 
 ```bash
 # Code: mirrors the tree, deletions included
-scripts/deploy-sync.sh root@195.72.61.232
+scripts/deploy-sync.sh root@93.183.104.169
 
 # Secrets: server only, never committed
-ssh root@195.72.61.232
+ssh root@93.183.104.169
 cd /opt/voice
 cp .env.production.example .env.production && chmod 600 .env.production
 $EDITOR .env.production
@@ -72,11 +73,11 @@ echo | openssl s_client -connect dianavoice.online:443 -servername dianavoice.on
 Open an SSH tunnel and use any client:
 
 ```bash
-ssh -L 15432:127.0.0.1:5432 root@195.72.61.232
+ssh -L 15432:127.0.0.1:5432 root@93.183.104.169
 psql "postgres://voice:<POSTGRES_PASSWORD>@127.0.0.1:15432/voice"
 ```
 
-One-offs: `ssh root@195.72.61.232 'docker exec -it postgres psql -U voice -d voice'`
+One-offs: `ssh root@93.183.104.169 'docker exec -it postgres psql -U voice -d voice'`
 
 ## Automatic deploy (GitHub Actions)
 
@@ -87,9 +88,9 @@ One-time setup via developer machine, before first Actions run:
 
 ```bash
 ssh-keygen -t ed25519 -f deploy_key -N '' -C 'github-actions deploy'
-ssh root@195.72.61.232 'cat >> ~/.ssh/authorized_keys' < deploy_key.pub
+ssh root@93.183.104.169 'cat >> ~/.ssh/authorized_keys' < deploy_key.pub
 gh secret set DEPLOY_SSH_KEY < deploy_key
-ssh-keyscan 195.72.61.232 2>/dev/null | gh secret set DEPLOY_KNOWN_HOSTS
+ssh-keyscan 93.183.104.169 2>/dev/null | gh secret set DEPLOY_KNOWN_HOSTS
 rm deploy_key deploy_key.pub
 ```
 
@@ -97,7 +98,8 @@ rm deploy_key deploy_key.pub
 
 # Развёртывание dianavoice.online
 
-Хост: `root@195.72.61.232`, каталог приложения `/opt/voice`.
+Хост: `root@93.183.104.169`, каталог приложения `/opt/voice`.
+Переезд на другой хост: [MIGRATE.md](MIGRATE.md).
 
 ## Топология
 
@@ -120,10 +122,10 @@ rm deploy_key deploy_key.pub
 
 ```bash
 # Код: зеркалит дерево, вместе с удалениями
-scripts/deploy-sync.sh root@195.72.61.232
+scripts/deploy-sync.sh root@93.183.104.169
 
 # Секреты: только на сервере, в git не попадают
-ssh root@195.72.61.232
+ssh root@93.183.104.169
 cd /opt/voice
 cp .env.production.example .env.production && chmod 600 .env.production
 $EDITOR .env.production
@@ -169,11 +171,11 @@ echo | openssl s_client -connect dianavoice.online:443 -servername dianavoice.on
 Откройте SSH-туннель и подключайтесь любым клиентом:
 
 ```bash
-ssh -L 15432:127.0.0.1:5432 root@195.72.61.232
+ssh -L 15432:127.0.0.1:5432 root@93.183.104.169
 psql "postgres://voice:<POSTGRES_PASSWORD>@127.0.0.1:15432/voice"
 ```
 
-Разовые запросы: `ssh root@195.72.61.232 'docker exec -it postgres psql -U voice -d voice'`
+Разовые запросы: `ssh root@93.183.104.169 'docker exec -it postgres psql -U voice -d voice'`
 
 ## Автодеплой (GitHub Actions)
 
@@ -184,8 +186,8 @@ psql "postgres://voice:<POSTGRES_PASSWORD>@127.0.0.1:15432/voice"
 
 ```bash
 ssh-keygen -t ed25519 -f deploy_key -N '' -C 'github-actions deploy'
-ssh root@195.72.61.232 'cat >> ~/.ssh/authorized_keys' < deploy_key.pub
+ssh root@93.183.104.169 'cat >> ~/.ssh/authorized_keys' < deploy_key.pub
 gh secret set DEPLOY_SSH_KEY < deploy_key
-ssh-keyscan 195.72.61.232 2>/dev/null | gh secret set DEPLOY_KNOWN_HOSTS
+ssh-keyscan 93.183.104.169 2>/dev/null | gh secret set DEPLOY_KNOWN_HOSTS
 rm deploy_key deploy_key.pub
 ```
