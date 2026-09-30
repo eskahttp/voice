@@ -168,7 +168,7 @@ export default function LandingPage() {
                         </Link>
 
                         <button className="rounded-full border border-white/10 bg-white/5 px-8 py-4 font-medium text-teal-100/80 backdrop-blur-md transition-all hover:border-teal-400/40 hover:bg-white/10">
-                            Learn more
+                            Learn more (haha)
                         </button>
                     </div>
                 </div>
