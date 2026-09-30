@@ -6,7 +6,7 @@ import { RefObject } from "react";
 import { useOnlineServersUserStore } from "@/app/stores/ServersStore/onlineUsersOnServerStore";
 
 interface Users { id: number; login:string; nickname: string; avatar_url:string; }
-interface Message { id: string; nickname: string; message: string; created_at: string; avatar_url:string; }
+interface Message { id: string; login:string; nickname: string; message: string; created_at: string; avatar_url:string; }
 interface Props {
     userList: Users[];
     SubmitAction: (formData: FormData) => void;
