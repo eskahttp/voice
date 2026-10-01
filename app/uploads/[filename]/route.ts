@@ -19,7 +19,8 @@ export async function GET(
         const mime =
             ext === '.png' ? 'image/png' :
                 ext === '.webp' ? 'image/webp' :
-                    ext === '.gif' ? 'image/gif' : 'image/jpeg';
+                    ext === '.jpg' ? 'image/jpg' :
+                        ext === '.gif' ? 'image/gif' : 'image/jpeg';
 
         return new NextResponse(file, {
             headers: {
