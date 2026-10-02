@@ -38,7 +38,7 @@ function AccountComponent({
             <div className="flex items-center gap-1 px-1 py-1">
                 <div className="flex items-center gap-2 flex-1 min-w-0 hover:bg-[#35373c] rounded-lg px-1 py-1 cursor-pointer">
                     <Image
-                        src={Avatar ? Avatar : '/amomain1.png'}
+                        src={Avatar ? Avatar : '/plugImage.png'}
                         width={50}
                         height={50}
                         className="w-10 h-10 rounded-full flex items-center justify-center font-bold shrink-0"

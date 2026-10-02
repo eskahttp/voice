@@ -98,7 +98,7 @@ function FriendsList({ FriendsArr, isOnlineList, onlineIds }: Props) {
                 </div>
             ))}
             {menu && (
-                <MenuItemTSX menuRef={menuRef} menu={menu} />
+                <MenuItemTSX setMenu={setMenu} menuRef={menuRef} menu={menu} />
             )}
         </div>
     );

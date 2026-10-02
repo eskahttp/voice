@@ -1,10 +1,13 @@
 import {MenuItemFn} from "@/app/(home)/client/me/pageComponent/RightBarComponent/FriendListComponent/MenuItemFn";
-import {RefObject} from "react";
+import React, {RefObject} from "react";
+import {useSelectedProfileStore} from "@/app/stores/selectedProfileStore/selectedProfileStore";
+import {useSocket} from "@/app/CustomHooks/socket";
 
 interface FriendsArr {
     id: number;
     nickname: string;
     login: string;
+    avatar_url: string;
 }
 
 interface ContextMenuState {
@@ -16,9 +19,14 @@ interface ContextMenuState {
 interface Props {
     menuRef: RefObject<HTMLDivElement | null>;
     menu: ContextMenuState;
+    setMenu: React.Dispatch<React.SetStateAction<ContextMenuState | null>>
 }
 
-export function MenuItemTSX({menuRef, menu}: Props){
+export function MenuItemTSX({menuRef, menu,setMenu}: Props){
+
+    const socket = useSocket()
+
+    const setSelectedProfile = useSelectedProfileStore(state => state.setUserId)
 
     return (
         <div
@@ -27,20 +35,24 @@ export function MenuItemTSX({menuRef, menu}: Props){
             className="fixed z-50 min-w-[200px] bg-[#0d0d0f] border border-[#232428]
                                rounded-lg shadow-2xl py-1.5 animate-in fade-in zoom-in-95 duration-100"
         >
-            <div className="px-3 py-2 text-xs text-gray-500 uppercase tracking-wide border-b border-[#232428] mb-1">
-                {menu.friend.nickname}
-            </div>
 
-            <MenuItemFn onClick={() => console.log('Открыть профиль', menu.friend)}>
-                👤 Открыть профиль
+            <MenuItemFn onClick={() => {
+                if (!socket) return
+                socket.emit('selectedProfile', menu.friend.login)
+                setSelectedProfile(1)
+                setMenu(null)
+            }}>
+                 Profile
             </MenuItemFn>
-            <MenuItemFn onClick={() => console.log('Написать сообщение', menu.friend)}>
-                💬 Написать сообщение
+            <MenuItemFn onClick={() => console.log('Message', menu.friend)}>
+                 Message
+            </MenuItemFn>
+            <MenuItemFn onClick={() => console.log('Invite', menu.friend)}>
+                Invite to Server
             </MenuItemFn>
             <div className="h-px bg-[#232428] my-1" />
-
-            <MenuItemFn danger onClick={() => console.log('Удалить из друзей', menu.friend)}>
-                🗑 Удалить из друзей
+            <MenuItemFn danger onClick={() => console.log('Delete', menu.friend)}>
+                Remove Friend
             </MenuItemFn>
         </div>
     )

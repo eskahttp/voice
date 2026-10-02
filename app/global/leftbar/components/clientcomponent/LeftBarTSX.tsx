@@ -2,6 +2,8 @@
 
 import HomeLink from "@/app/global/leftbar/components/clientcomponent/LinkClient";
 import AddServer from "@/app/global/leftbar/components/clientcomponent/addServer";
+import {useSelectedProfileStore} from "@/app/stores/selectedProfileStore/selectedProfileStore";
+import {SelectedProfile} from "@/app/global/userProfile/selectedProfile";
 
 interface MyServersArr {
     id: number;
@@ -21,7 +23,13 @@ interface Props {
 }
 
 function LeftBarTSX({myServers, ArrPending}: Props){
-    return (<div onContextMenu={(e) => e.preventDefault()} className="fixed top-0 left-0 h-screen w-[72px] bg-[#0b0b0d] flex flex-col items-center overflow-y-auto z-40  border-r border-[#232428]">
+
+    const selectedProfile = useSelectedProfileStore(state => state.userId)
+
+    return (<div>
+        {selectedProfile > 0 && (<SelectedProfile userId={selectedProfile} />)}
+
+        <div onContextMenu={(e) => e.preventDefault()} className="fixed top-0 left-0 h-screen w-[72px] bg-[#0b0b0d] flex flex-col items-center overflow-y-auto z-40  border-r border-[#232428]">
         <div className="h-[72px] flex items-center justify-center shrink-0">
             <HomeLink ArrPending={ArrPending} />
         </div>
@@ -33,6 +41,7 @@ function LeftBarTSX({myServers, ArrPending}: Props){
         <div className="flex flex-col items-center gap-2 pt-2 pb-3 w-full">
             <AddServer ServerBar={myServers} />
         </div>
+    </div>
     </div>)
 }
 

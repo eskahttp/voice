@@ -222,6 +222,27 @@ io.on('connection', async (socket) => {
         io.to(serverId).emit('userJoined', socket.data.user);
     });
 
+    socket.on('selectedProfile', async(login)=>{
+        const selectedProfileInfo = await pool.query(
+            `SELECT id,login, nickname, created_at, avatar_url
+         FROM users
+         WHERE login = $1`,
+            [login]
+        );
+
+        const userLoginId = selectedProfileInfo.rows[0].id;
+
+        const commonServers = await pool.query(
+            `SELECT s.id, s.name
+         FROM servers s
+         JOIN server_users m1 ON m1.server_id = s.id AND m1.user_id = $1
+         JOIN server_users m2 ON m2.server_id = s.id AND m2.user_id = $2`,
+            [socket.data.userId, userLoginId]
+        );
+
+        socket.emit('infoUserProfile',{profileInfo: selectedProfileInfo.rows[0], commonServers: commonServers.rows});
+    })
+
     socket.on('disconnect', () => {
         const userSockets = onlineUsers.get(userId);
         if (!userSockets) return;
