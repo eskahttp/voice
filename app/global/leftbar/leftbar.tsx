@@ -3,6 +3,9 @@ import LeftBarTSX from "@/app/global/leftbar/components/clientcomponent/LeftBarT
 import {
     CheckPendingFriend
 } from "@/app/(home)/client/me/pageComponent/pageAction/PendingFriendAction/SelectPendingFriend";
+import {
+    selectFriendAction
+} from "@/app/(home)/client/me/pageComponent/RightBarComponent/SelectFriendAction/SelectFriendAction";
 
 interface MyServersArr {
     id: number;
@@ -19,9 +22,11 @@ interface ArrFriend {
 async function LeftBar() {
     const GetServers : MyServersArr[] = await GetUserServers() ?? []
     const ArrPending: ArrFriend[] = await CheckPendingFriend() ?? []
+    const FriendsList = await selectFriendAction() ?? []
 
     return (
         <LeftBarTSX
+            FriendsArr={FriendsList}
             myServers={GetServers}
             ArrPending={ArrPending} />
     );

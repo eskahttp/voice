@@ -2,6 +2,10 @@
 
 import {FaMagnifyingGlass} from "react-icons/fa6";
 import Image from "next/image";
+import {
+    useHandleAddOrNot
+} from "@/app/(home)/client/me/pageComponent/RightBarComponent/customHooksRightBar/useHandleAddOrNot";
+import {useFriendsStore} from "@/app/stores/FriendStores/friendsStore";
 
 interface ArrFriend {
     id: number;
@@ -12,10 +16,13 @@ interface ArrFriend {
 
 interface Props {
     ArrPending: ArrFriend[];
-    handleAddOrNot: (AccOrIgn: boolean, PendingId: number) => void;
 }
 
-function PendingFriend({ ArrPending, handleAddOrNot }: Props) {
+function PendingFriend({ ArrPending }: Props) {
+
+    const addFriend = useFriendsStore((s) => s.addFriend);
+
+    const handleAddOrNot = useHandleAddOrNot(addFriend);
 
     return (
         <div className="flex-1 min-w-0 overflow-y-auto px-8 py-4">

@@ -153,6 +153,25 @@ io.on('connection', async (socket) => {
                 [login]
             );
             if (rows.length === 0) return;
+            if (rows[0].id === socket.data.userId) return;
+
+            const checkIt= await pool.query(
+                `SELECT 'friends' AS type FROM friends
+                                WHERE (user_id1 = $1 AND user_id2 = $2)
+                                OR (user_id1 = $2 AND user_id2 = $1)
+                                UNION ALL
+                                SELECT 'request' AS type FROM friendships
+                                WHERE (requester_id = $1 AND addressee_id = $2)
+                                OR (requester_id = $2 AND addressee_id = $1)
+                                LIMIT 1`,
+                [socket.data.userId, rows[0].id]
+            );
+
+            if (checkIt.rows.length > 0) return
+
+            await pool.query('INSERT INTO friendships (requester_id,addressee_id) VALUES ($1,$2)'
+                , [socket.data.userId, rows[0].id])
+
 
             const targetId = rows[0].id;
             const targetSockets = onlineUsers.get(targetId);
@@ -165,6 +184,9 @@ io.on('connection', async (socket) => {
     });
 
     socket.on('AdoptedProfile',async (PendingFriendId) => {
+        if (typeof PendingFriendId !== 'number' || !Number.isInteger(PendingFriendId)) return;
+
+
         const targetSockets = onlineUsers.get(PendingFriendId);
         if (!targetSockets || targetSockets.size === 0) return
 
