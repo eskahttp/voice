@@ -11,7 +11,7 @@ interface OnlineFriendsState {
     setOnline: (ids: number[]) => void;
 }
 
-export const useOnlineFriendsIdStore = create<OnlineFriendsState>((set, get) => ({
+export const useOnlineFriendsIdStore = create<OnlineFriendsState>((set) => ({
     onlineIds: new Set<number>(),
 
     AllFriendIds: new Set<number>(),

@@ -26,6 +26,7 @@ function RightBarClient({FriendsArr}: Props) {
 
     const AllPending = usePendingStore((s) => s.AllPending);
     const addOnline = useOnlineFriendsIdStore((s) => s.addOnline);
+    const addFriend = useOnlineFriendsIdStore((s) => s.addIdFriend);
 
     const socket = useSocket();
     useEffect(() => {
@@ -34,6 +35,7 @@ function RightBarClient({FriendsArr}: Props) {
         const onAdopted = (profile: ArrFriend) => {
             setAllFriends((prev) => [...prev, profile]);
             addOnline(profile.id);
+            addFriend(profile.id);
         };
 
         socket.on('AdoptedProfile', onAdopted);
@@ -41,7 +43,7 @@ function RightBarClient({FriendsArr}: Props) {
         return () => {
             socket.off('AdoptedProfile', onAdopted);
         };
-    }, [socket, setAllFriends,addOnline]);
+    }, [socket, setAllFriends,addOnline,addFriend]);
 
     const handleAddOrNot = useHandleAddOrNot(setAllFriends);
 
