@@ -1,11 +1,6 @@
 'use client';
 
-import {
-    X,
-    MessageCircle,
-    UserCheck,
-    MoreHorizontal,
-} from "lucide-react";
+import {X, MessageCircle, UserCheck, MoreHorizontal,} from "lucide-react";
 import {useSelectedProfileStore} from "@/app/stores/selectedProfileStore/selectedProfileStore";
 import Image from "next/image";
 import { format } from "date-fns";
@@ -32,9 +27,10 @@ export function SelectedProfileTSX({login, nickname, friendsSince, memberSince,a
 
     const setUserId = useSelectedProfileStore(state => state.setUserId)
 
-    const formatted = format(new Date(memberSince), "MMM d, yyyy");
+    const MemberSince = format(new Date(memberSince), "MMM d, yyyy");
 
-    return (<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+    return (<div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
             <div className="relative flex h-[795px] w-full max-w-[953px] gap-8 overflow-hidden rounded-xl border border-zinc-800 bg-black pl-10 pt-12 text-zinc-100">
                 <button className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-300 hover:text-white cursor-pointer">
                     <X size={16} onClick={()=>setUserId(0)} />
@@ -79,7 +75,7 @@ export function SelectedProfileTSX({login, nickname, friendsSince, memberSince,a
                         <div className="mt-5 space-y-5">
                             <div>
                                 <p className="text-xs text-zinc-400">Member Since</p>
-                                <p className="mt-2 text-sm">{formatted}</p>
+                                <p className="mt-2 text-sm">{MemberSince}</p>
                             </div>
                             <div>
                                 <p className="text-xs text-zinc-400">Friends Since</p>
