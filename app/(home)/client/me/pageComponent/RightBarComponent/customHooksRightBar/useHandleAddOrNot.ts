@@ -1,9 +1,7 @@
-
 import { useSocket } from '@/app/CustomHooks/socket';
 import { usePendingStore } from '@/app/stores/FriendStores/pendingStore';
 import { AddOrNotFriend } from '@/app/(home)/client/me/pageComponent/pageAction/PendingFriendAction/AddOrIgnoreFriend';
-import {Dispatch, SetStateAction} from "react";
-import {useOnlineFriendsIdStore} from "@/app/stores/FriendStores/onlineFriendsStore";
+import { useOnlineFriendsIdStore } from '@/app/stores/FriendStores/onlineFriendsStore';
 
 interface ArrFriend {
     id: number;
@@ -12,19 +10,21 @@ interface ArrFriend {
     avatar_url: string;
 }
 
-export function useHandleAddOrNot(setAllFriends: Dispatch<SetStateAction<ArrFriend[]>>) {
+type AddFriendFn = (friend: ArrFriend) => void;
+
+export function useHandleAddOrNot(addFriend: AddFriendFn) {
     const socket = useSocket();
     const removePending = usePendingStore((s) => s.removePending);
-    const addFriend = useOnlineFriendsIdStore((s) => s.addIdFriend);
+    const addOnlineFriend = useOnlineFriendsIdStore((s) => s.addIdFriend);
 
-    return async (accept: boolean, PendingFriendId: number) => {
-        const profile = await AddOrNotFriend(accept, PendingFriendId);
-        removePending(PendingFriendId);
+    return async (accept: boolean, pendingFriendId: number) => {
+        const profile: ArrFriend = await AddOrNotFriend(accept, pendingFriendId);
+        removePending(pendingFriendId);
 
         if (accept) {
-            setAllFriends((prev) => [...prev, profile]);
-            addFriend(PendingFriendId);
-            socket?.emit('AdoptedProfile', PendingFriendId);
+            addFriend(profile);
+            addOnlineFriend(pendingFriendId);
+            socket?.emit('AdoptedProfile', pendingFriendId);
         }
     };
 }

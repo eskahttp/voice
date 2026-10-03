@@ -2,6 +2,7 @@ import AddFriend from "@/app/(home)/client/me/pageComponent/RightBarComponent/Ad
 import PendingFriend from "@/app/(home)/client/me/pageComponent/RightBarComponent/PendingFriend";
 import FriendsList from "@/app/(home)/client/me/pageComponent/RightBarComponent/FriendsList";
 import {useOnlineFriendsIdStore} from "@/app/stores/FriendStores/onlineFriendsStore";
+import {useFriendsStore} from "@/app/stores/FriendStores/friendsStore";
 
 interface ArrFriend {
     id: number;
@@ -12,18 +13,18 @@ interface ArrFriend {
 
 interface Props {
     filter: 'online' | 'all' | 'add' | 'pending';
-    friendsAll: ArrFriend[];
     allPending: ArrFriend[];
-    handleAddOrNot: (accept: boolean, id: number) => void;
 }
 
-export function RightBarContent({ filter, friendsAll, allPending, handleAddOrNot }: Props) {
+export function RightBarContent({ filter, allPending }: Props) {
     const onlineIds = useOnlineFriendsIdStore(state => state.onlineIds)
+
+    const friendsAll: ArrFriend[] = useFriendsStore(state => state.allFriends)
 
 
     if (filter === 'add') return <AddFriend />;
     if (filter === 'pending')
-        return <PendingFriend handleAddOrNot={handleAddOrNot} ArrPending={allPending} />;
+        return <PendingFriend ArrPending={allPending} />;
 
     const list =
         filter === 'online'

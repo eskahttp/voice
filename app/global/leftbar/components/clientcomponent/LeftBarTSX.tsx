@@ -4,6 +4,7 @@ import HomeLink from "@/app/global/leftbar/components/clientcomponent/LinkClient
 import AddServer from "@/app/global/leftbar/components/clientcomponent/addServer";
 import {useSelectedProfileStore} from "@/app/stores/selectedProfileStore/selectedProfileStore";
 import {SelectedProfile} from "@/app/global/userProfile/selectedProfile";
+import {useAdoptedProfile} from "@/app/global/leftbar/components/hooks/useAdoptedProfile";
 
 interface MyServersArr {
     id: number;
@@ -20,11 +21,14 @@ interface ArrFriend {
 interface Props {
     myServers: MyServersArr[];
     ArrPending: ArrFriend[];
+    FriendsArr: ArrFriend[];
 }
 
-function LeftBarTSX({myServers, ArrPending}: Props){
+function LeftBarTSX({myServers, ArrPending , FriendsArr}: Props){
 
     const selectedProfile = useSelectedProfileStore(state => state.userId)
+
+    useAdoptedProfile(FriendsArr)
 
     return (<div>
         {selectedProfile > 0 && (<SelectedProfile userId={selectedProfile} />)}

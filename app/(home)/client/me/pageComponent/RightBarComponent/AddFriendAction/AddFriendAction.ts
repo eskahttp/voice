@@ -40,13 +40,5 @@ export async function AddFriendAction(formData: FormData): Promise<{message: str
 
     if(CheckFriendsList.rows.length > 0) return {message: `You're already friends with this user!`, color: 'red', checkIt: false}
 
-    const CheckFriendShips = await pool.query(
-        'SELECT id FROM friendships WHERE requester_id = $1 AND addressee_id = $2',[UserId.rows[0].login_id, FriendIdQuery.rows[0].id])
-
-    if (CheckFriendShips.rows.length > 0) return {message: `Success! Your friend request to ${FriendLogin} was sent.`, color: 'green', checkIt: false}
-
-    await pool.query('INSERT INTO friendships (requester_id,addressee_id) VALUES ($1,$2) RETURNING id'
-        , [UserId.rows[0].login_id, FriendIdQuery.rows[0].id])
-
     return {message: `Success! Your friend request to ${FriendLogin} was sent.`, color: 'green', checkIt: true}
 }
