@@ -104,12 +104,17 @@ COPY --from=builder --chown=node:node /app/public ./public
 # Set the correct permission for prerender cache
 RUN mkdir .next && chown node:node .next
 
+# Create uploads directory with correct permissions
+RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
+
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 
 COPY --from=builder /app/server.mjs ./server.mjs
+# server.mjs imports this; output tracing covers Next's server, not ours.
+COPY --from=builder /app/getCookie.js ./getCookie.js
 COPY --from=builder /app/migrations ./migrations
 COPY --from=builder /app/node_modules ./node_modules
 

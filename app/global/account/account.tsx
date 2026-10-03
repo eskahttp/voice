@@ -1,130 +1,92 @@
 'use client';
 
-import { JSX, useEffect, useState } from "react";
-import { RoomEvent } from 'livekit-client';
-import {useVoice} from "@/app/(home)/client/[id]/context/VoiceContext";
+import { JSX, useEffect } from "react";
 import AccountComponent from "@/app/global/account/components/AccountComponent/AccountComponent";
+import {useRoomAndMicStore} from "@/app/stores/LiveKit/RoomAndMicStore";
+import {useMicrophoneEvents} from "@/app/global/account/components/Hooks/useMicrophoneEvents";
+import {AccountUpperInfo} from "@/app/global/account/components/AccountComponent/AccountUpperInfo";
+import {useSetMyInfoOnStore} from "@/app/global/account/components/Hooks/useSetMyInfoOnStore";
+import {useMyAccountStore} from "@/app/stores/MyAccountStores/myAccountStore";
+
 interface Props {
-    Nickname: string;
+    UserInfo: {
+        login: string;
+        nickname: string;
+        email: string;
+        avatar_url: string;
+    }
 }
 
-function AccountInfo({ Nickname }: Props): JSX.Element {
-    const { room, setRoom, activeRoomId, setActiveRoomId, activeRoomName, setActiveRoomName } = useVoice();
+const clickAudio = typeof Audio !== "undefined"
+    ? new Audio("/audio/minecraft-click_DeZnoGEf.mp3")
+    : null;
 
-    const [micEnabled, setMicEnabled] = useState<boolean>(true);
+function AccountInfo({ UserInfo }: Props): JSX.Element {
+
+    useSetMyInfoOnStore(UserInfo.login, UserInfo.nickname, UserInfo.email, UserInfo.avatar_url);
+
+    const room = useRoomAndMicStore((state) => state.room);
+    const setRoom = useRoomAndMicStore((state) => state.setRoom);
+
+    const ActiveRoomId = useRoomAndMicStore((state) => state.activeRoomId);
+    const ActiveRoomName = useRoomAndMicStore((state) => state.activeRoomName);
+    const setActiveRoom = useRoomAndMicStore((state) => state.setActiveRoom);
+
+    const microphone = useRoomAndMicStore((state) => state.microphone);
+    const setMicrophone = useRoomAndMicStore((state) => state.setMicrophone);
+
+    const myAvatar = useMyAccountStore((state)=> state.avatar_url)
 
     useEffect(() => {
         try {
             const saved = localStorage.getItem("micEnabled");
             if (saved !== null) {
-                setMicEnabled(JSON.parse(saved));
+                setMicrophone(JSON.parse(saved));
             }
-        }
-        catch (e){
-            console.error(e);
-            setMicEnabled(true);
-        }
-    }, []);
+        }catch{}
+    }, [setMicrophone]);
 
-    useEffect(() => {
-        if (!room) return
-
-        const updateMic = () => {
-            setMicEnabled(room.localParticipant.isMicrophoneEnabled);
-        };
-
-
-        updateMic();
-
-
-        room.on(RoomEvent.TrackMuted, updateMic);
-        room.on(RoomEvent.TrackUnmuted, updateMic);
-        room.on(RoomEvent.LocalTrackPublished, updateMic);
-        room.on(RoomEvent.LocalTrackUnpublished, updateMic);
-        room.on(RoomEvent.Connected, updateMic);
-
-        return () => {
-            room.off(RoomEvent.TrackMuted, updateMic);
-            room.off(RoomEvent.TrackUnmuted, updateMic);
-            room.off(RoomEvent.LocalTrackPublished, updateMic);
-            room.off(RoomEvent.LocalTrackUnpublished, updateMic);
-            room.off(RoomEvent.Connected, updateMic);
-        };
-    }, [room]);
+    useMicrophoneEvents(room,setMicrophone)
 
     const toggleMic = async () => {
+        clickAudio?.play();
         if (!room) {
-            setMicEnabled((prev) => {
-                const next = !prev;
-                try{
-                    localStorage.setItem("micEnabled", JSON.stringify(next));
-                    return next;
-                }
-                catch (e){
-                    console.error(e);
-                    return true
-                }
-            });
-            return;
+            setMicrophone(!microphone);
+            try{localStorage.setItem('micEnabled', String(!microphone));} catch{}
+            return
         }
 
-        const currentlyEnabled = room.localParticipant.isMicrophoneEnabled;
-        const next = !currentlyEnabled;
-
+        const next = !room.localParticipant.isMicrophoneEnabled;
         await room.localParticipant.setMicrophoneEnabled(next);
-        setMicEnabled(next);
-        try{
-            localStorage.setItem("micEnabled", JSON.stringify(next));
-        }
-        catch (e){
-            console.error(e);
-        }
+        setMicrophone(next);
     };
 
     const leaveRoom = async () => {
         if (!room) return;
         await room.disconnect();
-        const saved = localStorage.getItem("micEnabled");
-        if (saved !== null) {
-            setMicEnabled(JSON.parse(saved));
-        }
         setRoom(null);
-        setActiveRoomId(null);
-        setActiveRoomName(null);
+        setActiveRoom(null, null);
     };
 
     return (
-        <div className="fixed bottom-0 w-[364px] flex flex-col z-50">
-            {activeRoomId && (
-                <div className="flex items-center justify-between px-3 py-2 mx-2 mt-2 rounded-xl bg-[#232428] border border-gray-500">
-                    <div className="flex flex-col min-w-0">
-                        <div className="text-xs text-green-400 font-semibold flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-green-400" />
-                            Voice connection established.
-                        </div>
-                        <div className="text-[11px] text-gray-400 truncate">
-                            {activeRoomName ?? `Канал #${activeRoomId}`}
-                        </div>
-                    </div>
-                    <button
-                        onClick={leaveRoom}
-                        className="w-7 h-7 rounded hover:bg-red-500/20 text-red-400 flex items-center justify-center"
-                        title="Disconnect"
-                    >
-                        ✕
-                    </button>
-                </div>
-            )}
+        <div>
+
+        <AccountUpperInfo
+            leaveRoom={leaveRoom}
+            ActiveRoomId={ActiveRoomId}
+            AccountInfo={
             <AccountComponent
-                Nickname={Nickname}
-                activeRoomId={activeRoomId}
-                activeRoomName={activeRoomName}
+                Nickname={UserInfo.nickname}
+                Avatar={myAvatar}
+                activeRoomId={ActiveRoomId}
+                activeRoomName={ActiveRoomName}
                 toggleMic={toggleMic}
                 room={room}
-                micEnabled={micEnabled}
-            />
-        </div>
-    );
+                micEnabled={microphone}
+            />}
+            ActiveRoomName={ActiveRoomName}
+                />
+        </div> );
 }
 
 export default AccountInfo;
