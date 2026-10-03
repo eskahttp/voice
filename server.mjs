@@ -10,6 +10,7 @@ import fs from 'fs';
 import { Pool } from 'pg';
 import {getCookie} from "./getCookie.js";
 import {clearTimeout, setTimeout} from "node:timers";
+import {privateDecrypt} from "node:crypto";
 
 if (fs.existsSync('.env.local')) {
     dotenv.config({ path: '.env.local' });
@@ -59,7 +60,7 @@ io.on('connection', async (socket) => {
 
 
     const { rows } = await pool.query(
-        `SELECT u.id, u.login, u.nickname ,u.avatar_url 
+        `SELECT u.id, u.login, u.nickname ,u.avatar_url, u.created_at
          FROM session s 
          JOIN users u ON u.id = s.login_id 
          WHERE s.cookie = $1`,
@@ -223,6 +224,8 @@ io.on('connection', async (socket) => {
     });
 
     socket.on('selectedProfile', async(login)=>{
+        if (typeof login !== 'string' || login.length === 0 || login.length > 28) return;
+
         const selectedProfileInfo = await pool.query(
             `SELECT id,login, nickname, created_at, avatar_url
          FROM users
@@ -241,6 +244,39 @@ io.on('connection', async (socket) => {
         );
 
         socket.emit('infoUserProfile',{profileInfo: selectedProfileInfo.rows[0], commonServers: commonServers.rows});
+    })
+
+    socket.on('joinDM',async (userChatId)=> {
+        if (typeof userChatId !== 'string') return;
+
+        const receiverId = Number(userChatId)
+
+        const roomId = socket.data.userId + receiverId
+        socket.join(roomId)
+
+        const received_id = await pool.query('SELECT id,login,nickname,avatar_url,created_at FROM users WHERE id = $1', [receiverId]);
+
+        const privateUserMessage = await pool.query(`
+            SELECT id, sender_id, receiver_id, body, created_at, read_at
+            FROM private_messages
+            WHERE LEAST(sender_id, receiver_id)    = LEAST($1, $2)
+            AND GREATEST(sender_id, receiver_id) = GREATEST($1, $2)
+            ORDER BY created_at DESC`,[socket.data.userId,receiverId]
+        );
+
+        const result = {
+            usersProfile: {
+                myProfile: socket.data.user,
+                receiverProfile: received_id.rows[0]
+            },
+            privateUserMessage: privateUserMessage.rows ?? []
+        }
+
+        socket.emit('chatInfo', result)
+
+        socket.on('leaveDM', ()=> {
+            socket.leave(roomId)
+        })
     })
 
     socket.on('disconnect', () => {

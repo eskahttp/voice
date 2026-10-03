@@ -103,6 +103,59 @@ export const up = (pgm) => {
     pgm.createIndex('server_users',        'server_id', { name: 'idx_server_users_server_id' });
     pgm.createIndex('voice_chanels',       'server_id', { name: 'idx_voice_chanels_server_id' });
     pgm.createIndex('server_users',        'user_id',   { name: 'idx_server_users_user_id' });
+
+    pgm.createTable('private_messages', {
+        id: 'bigserial',
+        sender_id: {
+            type: 'bigint',
+            notNull: true,
+            references: '"users"(id)',
+            onDelete: 'CASCADE',
+        },
+        receiver_id: {
+            type: 'bigint',
+            notNull: true,
+            references: '"users"(id)',
+            onDelete: 'CASCADE',
+        },
+        body: {
+            type: 'text',
+            notNull: true,
+        },
+        created_at: {
+            type: 'timestamptz',
+            notNull: true,
+            default: pgm.func('now()'),
+        },
+        read_at: {
+            type: 'timestamptz',
+            notNull: false,
+            default: null,
+        },
+    }, { ifNotExists: true });
+
+    pgm.addConstraint('private_messages', 'private_messages_pkey', {
+        primaryKey: 'id',
+    });
+
+    pgm.createIndex(
+        'private_messages',
+        [
+            { name: 'LEAST(sender_id, receiver_id)' },
+            { name: 'GREATEST(sender_id, receiver_id)' },
+            { name: 'created_at', sort: 'DESC' },
+        ],
+        { name: 'idx_private_messages_pair_time' },
+    );
+
+    pgm.createIndex(
+        'private_messages',
+        ['receiver_id', 'sender_id'],
+        {
+            name: 'idx_private_messages_unread',
+            where: 'read_at IS NULL',
+        },
+    );
 };
 
 /**
