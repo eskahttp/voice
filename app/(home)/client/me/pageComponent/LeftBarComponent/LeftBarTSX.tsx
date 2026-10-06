@@ -2,11 +2,13 @@
 
 import {usePendingStore} from "@/app/stores/FriendStores/pendingStore";
 import {UserGroup} from "lucide-react";
-import Link from "next/link";
+import React from "react";
 
-interface Props {}
+interface Props {
+    children: React.ReactNode;
+}
 
-function LeftBarTSX({}: Props){
+function LeftBarTSX({children}: Props){
     const AllPending = usePendingStore((s) => s.AllPending);
 
     return (
@@ -61,15 +63,7 @@ function LeftBarTSX({}: Props){
                     </div>
 
                     <div className="space-y-0.5 mt-1">
-                        <Link href={'/client/me/12'} className="flex items-center gap-3 px-2 py-2 rounded hover:bg-[#26272b] cursor-pointer group">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-red-600 flex items-center justify-center text-lg shrink-0">
-                                🌙
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium text-gray-200 truncate">Sciamachy</div>
-                                <div className="text-xs text-gray-400 truncate">you are my special</div>
-                            </div>
-                        </Link>
+                        {children}
                     </div>
 
                 </div>

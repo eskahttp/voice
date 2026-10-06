@@ -20,9 +20,7 @@ interface Props {
 
 function PendingFriend({ ArrPending }: Props) {
 
-    const addFriend = useFriendsStore((s) => s.addFriend);
-
-    const handleAddOrNot = useHandleAddOrNot(addFriend);
+    const handleAddOrNot = useHandleAddOrNot();
 
     return (
         <div className="flex-1 min-w-0 overflow-y-auto px-8 py-4">
