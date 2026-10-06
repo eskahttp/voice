@@ -104,19 +104,57 @@ export const up = (pgm) => {
     pgm.createIndex('voice_chanels',       'server_id', { name: 'idx_voice_chanels_server_id' });
     pgm.createIndex('server_users',        'user_id',   { name: 'idx_server_users_user_id' });
 
-    pgm.createTable('private_messages', {
+    // ---- conversations ----
+    pgm.createTable('conversations', {
         id: 'bigserial',
-        sender_id: {
+        user_one_id: {
             type: 'bigint',
             notNull: true,
             references: '"users"(id)',
             onDelete: 'CASCADE',
         },
-        receiver_id: {
+        user_two_id: {
             type: 'bigint',
             notNull: true,
             references: '"users"(id)',
             onDelete: 'CASCADE',
+        },
+        created_at: {
+            type: 'timestamptz',
+            notNull: true,
+            default: pgm.func('now()'),
+        },
+    }, { ifNotExists: true });
+
+    pgm.addConstraint('conversations', 'conversations_pkey', {
+        primaryKey: 'id',
+    });
+
+    // всегда храним меньший ID первым - это защита от дублей
+    pgm.addConstraint('conversations', 'ordered_users', {
+        check: 'user_one_id < user_two_id',
+    });
+
+    pgm.addConstraint('conversations', 'unique_pair', {
+        unique: ['user_one_id', 'user_two_id'],
+    });
+
+    pgm.createIndex('conversations', 'user_one_id', { name: 'idx_conversations_user_one' });
+    pgm.createIndex('conversations', 'user_two_id', { name: 'idx_conversations_user_two' });
+
+    // ---- private_messages ----
+    pgm.createTable('private_messages', {
+        id: 'bigserial',
+        conversation_id: {
+            type: 'bigint',
+            notNull: true,
+            references: '"conversations"(id)',
+            onDelete: 'CASCADE',
+        },
+        sender_id: {
+            type: 'bigint',
+            notNull: true,
+            references: '"users"(id)',
         },
         body: {
             type: 'text',
@@ -127,11 +165,6 @@ export const up = (pgm) => {
             notNull: true,
             default: pgm.func('now()'),
         },
-        read_at: {
-            type: 'timestamptz',
-            notNull: false,
-            default: null,
-        },
     }, { ifNotExists: true });
 
     pgm.addConstraint('private_messages', 'private_messages_pkey', {
@@ -141,20 +174,10 @@ export const up = (pgm) => {
     pgm.createIndex(
         'private_messages',
         [
-            { name: 'LEAST(sender_id, receiver_id)' },
-            { name: 'GREATEST(sender_id, receiver_id)' },
+            'conversation_id',
             { name: 'created_at', sort: 'DESC' },
         ],
-        { name: 'idx_private_messages_pair_time' },
-    );
-
-    pgm.createIndex(
-        'private_messages',
-        ['receiver_id', 'sender_id'],
-        {
-            name: 'idx_private_messages_unread',
-            where: 'read_at IS NULL',
-        },
+        { name: 'idx_private_messages_conv_time' },
     );
 };
 
@@ -164,9 +187,19 @@ export const up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 export const down = (pgm) => {
-    pgm.dropIndex('server_users',        'user_id',   { name: 'idx_server_users_user_id',        ifExists: true });
-    pgm.dropIndex('voice_chanels',       'server_id', { name: 'idx_voice_chanels_server_id',     ifExists: true });
-    pgm.dropIndex('server_users',        'server_id', { name: 'idx_server_users_server_id',      ifExists: true });
+    pgm.dropIndex('private_messages', ['conversation_id', 'created_at'], {
+        name: 'idx_private_messages_conv_time',
+        ifExists: true,
+    });
+    pgm.dropTable('private_messages', { ifExists: true, cascade: true });
+
+    pgm.dropIndex('conversations', 'user_two_id', { name: 'idx_conversations_user_two', ifExists: true });
+    pgm.dropIndex('conversations', 'user_one_id', { name: 'idx_conversations_user_one', ifExists: true });
+    pgm.dropTable('conversations', { ifExists: true, cascade: true });
+
+    pgm.dropIndex('server_users',        'user_id',   { name: 'idx_server_users_user_id',          ifExists: true });
+    pgm.dropIndex('voice_chanels',       'server_id', { name: 'idx_voice_chanels_server_id',       ifExists: true });
+    pgm.dropIndex('server_users',        'server_id', { name: 'idx_server_users_server_id',        ifExists: true });
     pgm.dropIndex('message_user_server', 'server_id', { name: 'idx_message_user_server_server_id', ifExists: true });
 
     pgm.dropTable('message_user_server', { ifExists: true, cascade: true });

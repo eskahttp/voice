@@ -3,6 +3,9 @@
 import {usePendingStore} from "@/app/stores/FriendStores/pendingStore";
 import {UserGroup} from "lucide-react";
 import React from "react";
+import {usePathname, useRouter} from "next/navigation";
+import Link from "next/link";
+import {router} from "next/client";
 
 interface Props {
     children: React.ReactNode;
@@ -10,18 +13,29 @@ interface Props {
 
 function LeftBarTSX({children}: Props){
     const AllPending = usePendingStore((s) => s.AllPending);
+    const pathname = usePathname();
+    const router = useRouter();
+
+    const redirectOnClient = ()=>{
+        if (pathname === '/client/me'){
+            return;
+        }
+        router.push('/client/me');
+    }
 
     return (
         <>
             <div onContextMenu={(e)=> e.preventDefault()} className="h-12 flex items-center px-2 border-b border-[#232428] shrink-0">
-                <button className="w-full h-8 bg-[#1e1f22] rounded text-sm text-gray-300 hover:text-white px-2 text-left">
+                <button className="w-full h-8 bg-[#1e1f22] rounded text-sm text-gray-300 hover:text-white px-2 text-left cursor-pointer">
                     Find or start a conversation
                 </button>
             </div>
 
             <div onContextMenu={(e)=> e.preventDefault()} className="flex-1 overflow-y-auto px-2 py-2">
                 <div className="space-y-0.5">
-                    <div className="flex items-center justify-between gap-3 px-2 py-2 rounded bg-[#26272b] text-white cursor-pointer">
+                    <div
+                        onClick={redirectOnClient}
+                        className={`flex items-center justify-between gap-3 px-2 py-2 rounded ${pathname === '/client/me' ? 'bg-[#26272b] text-white' : 'hover:bg-[#26272b] hover:text-white'} cursor-pointer`}>
                         <div className="flex items-center gap-3">
                             <UserGroup />
                             <span className="text-sm font-medium">Friends</span>

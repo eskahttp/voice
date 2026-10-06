@@ -20,7 +20,7 @@ interface Props {
 
 export default function HomeLink({ArrPending}: Props) {
     const pathname = usePathname();
-    const isActive = pathname === '/client/me';
+    const isActive = pathname.includes('/client/me')
 
     const socket = useSocket();
 
