@@ -1,5 +1,6 @@
 import React from "react";
 import {UserGroup} from "lucide-react";
+import {useOnlineFriendsIdStore} from "@/app/stores/FriendStores/onlineFriendsStore";
 
 type Filter = 'online' | 'all' | 'add' | 'pending';
 
@@ -17,6 +18,8 @@ interface Props {
 
 function RightPageTSX({ filter ,setFilter, AllPending }: Props){
 
+    const onlineIds = useOnlineFriendsIdStore(state => state.onlineIds)
+
     const getFilterButtonClass = (isActive: boolean) =>
         `px-2.5 py-1 rounded text-sm font-medium cursor-pointer transition-colors ${
             isActive
@@ -32,12 +35,12 @@ function RightPageTSX({ filter ,setFilter, AllPending }: Props){
             </div>
             <div className="w-px h-6 bg-[#232428]" />
             <div className="flex items-center gap-4 text-sm">
-                <button
-                    onClick={()=>setFilter('online')}
+                {onlineIds.size > 0 && <button
+                    onClick={() => setFilter('online')}
                     className={getFilterButtonClass(filter === 'online')}
                 >
                     Online
-                </button>
+                </button>}
                 <button
                     onClick={()=>setFilter('all')}
                     className={getFilterButtonClass(filter === 'all')}

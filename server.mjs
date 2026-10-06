@@ -268,38 +268,78 @@ io.on('connection', async (socket) => {
         socket.emit('infoUserProfile',{profileInfo: selectedProfileInfo.rows[0], commonServers: commonServers.rows});
     })
 
-    socket.on('joinDM',async (userChatId)=> {
-        if (typeof userChatId !== 'string') return;
+    socket.on('joinDM',async (conversationId,ack)=> {
+        if (typeof conversationId !== 'string') return;
 
-        const receiverId = Number(userChatId)
+        const myId = socket.data.userId;
 
-        const roomId = socket.data.userId + receiverId
-        socket.join(roomId)
+        const conversation = await pool.query(`
+            SELECT u.id,
+                   u.login,
+                   u.nickname,
+                   u.avatar_url,
+                   u.created_at
+            FROM conversations c
+                     JOIN users u
+                          ON u.id = CASE
+                                        WHEN c.user_one_id = $1 THEN c.user_two_id
+                                        ELSE c.user_one_id
+                              END
+            WHERE c.id = $2
+              AND (c.user_one_id = $1 OR c.user_two_id = $1)
+        `, [myId, Number(conversationId)]);
 
-        const received_id = await pool.query('SELECT id,login,nickname,avatar_url,created_at FROM users WHERE id = $1', [receiverId]);
+        if (conversation.rows.length === 0) return
 
-        const privateUserMessage = await pool.query(`
-            SELECT id, sender_id, receiver_id, body, created_at, read_at
-            FROM private_messages
-            WHERE LEAST(sender_id, receiver_id)    = LEAST($1, $2)
-            AND GREATEST(sender_id, receiver_id) = GREATEST($1, $2)
-            ORDER BY created_at DESC`,[socket.data.userId,receiverId]
-        );
+        const messages = await pool.query(`
+            SELECT m.id,
+                   m.sender_id,
+                   m.body,
+                   m.created_at,
+                   u.login       AS sender_login,
+                   u.nickname    AS sender_nickname,
+                   u.avatar_url  AS sender_avatar_url
+            FROM private_messages m
+                     JOIN users u ON u.id = m.sender_id
+            WHERE m.conversation_id = $1
+            ORDER BY m.created_at ASC
+        `, [conversationId]);
 
-        const result = {
-            usersProfile: {
-                myProfile: socket.data.user,
-                receiverProfile: received_id.rows[0]
-            },
-            privateUserMessage: privateUserMessage.rows ?? []
-        }
+        socket.join(conversationId)
 
-        socket.emit('chatInfo', result)
-
-        socket.on('leaveDM', ()=> {
-            socket.leave(roomId)
+        ack({
+            companion: conversation.rows[0],
+            privateMessages: messages.rows,
         })
+
     })
+
+        socket.on('sendPrivateMessage', async (userChatId,message) => {
+            const conversationCheck = await pool.query(`
+            SELECT 1 FROM conversations WHERE id = $1 AND (user_one_id = $2 OR user_two_id = $2) LIMIT 1`,[userChatId,socket.data.userId]
+            )
+            if (conversationCheck.rows.length === 0) return;
+
+            const messageData = await pool.query(`
+            INSERT INTO private_messages (conversation_id, sender_id, body)
+            VALUES ($1, $2, $3) RETURNING id`,[userChatId,socket.data.userId,message]
+            )
+
+            io.to(userChatId).emit('privateMessage', {
+                id: messageData.rows[0].id,
+                conversation_id: userChatId,
+                sender_id: socket.data.userId,
+                sender_login: socket.data.user.login,
+                sender_nickname: socket.data.user.nickname,
+                sender_avatar_url: socket.data.user.avatar_url,
+                body: message,
+                created_at: new Date()
+            });
+        })
+
+        socket.on('leaveDM', (conversationId) => {
+            socket.leave(conversationId)
+        })
 
     socket.on('disconnect', () => {
         const userSockets = onlineUsers.get(userId);

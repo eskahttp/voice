@@ -19,16 +19,19 @@ interface ArrFriend {
     avatar_url: string;
 }
 
+type UserInfo = [MyServersArr[],ArrFriend[],ArrFriend[]]
+
 async function LeftBar() {
-    const GetServers : MyServersArr[] = await GetUserServers() ?? []
-    const ArrPending: ArrFriend[] = await CheckPendingFriend() ?? []
-    const FriendsList = await selectFriendAction() ?? []
+    const [GetServers,ArrPending,FriendsList] : UserInfo = await Promise.all([
+        GetUserServers(),
+        CheckPendingFriend(),
+        selectFriendAction()])
 
     return (
         <LeftBarTSX
-            FriendsArr={FriendsList}
-            myServers={GetServers}
-            ArrPending={ArrPending} />
+            FriendsArr={FriendsList ?? []}
+            myServers={GetServers ?? []}
+            ArrPending={ArrPending ?? []} />
     );
 }
 

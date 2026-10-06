@@ -43,13 +43,12 @@ export function useActivityServerUsers(socket: Socket|null,
             removeOnlineUser(userId)
         }
 
-        socket.emit('getServerUsers', serverId)
         socket.on('newOnlineUser',newOnlineUser)
         socket.on('deleteOnlineUser',deleteOnlineUser)
         socket.on('getAllUsersAndOnlineUsers', setOfflineAndOnlineUsers)
-
         socket.on('message', messageHandler);
         socket.on('userJoined', userJoinedHandler);
+        socket.emit('getServerUsers', serverId)
 
         return () => {
             socket.emit('leaveRoom', serverId);
