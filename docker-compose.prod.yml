@@ -48,6 +48,8 @@ services:
       DATABASE_URL: postgres://voice:${POSTGRES_PASSWORD}@db:5432/voice
     ports:
       - "127.0.0.1:3000:3000"
+    volumes:
+      - uploads:/app/uploads # avatars: outside the image, or every rebuild wipes them
     depends_on:
       db:
         condition: service_healthy
@@ -73,5 +75,6 @@ services:
 
 volumes:
   pgdata:
+  uploads:
   caddy_data:
   caddy_config:

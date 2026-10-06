@@ -4,14 +4,33 @@ import { cookies } from 'next/headers';
 import { pool } from '@/app/lib/db';
 import {redirect} from "next/navigation";
 import {revalidatePath} from "next/cache";
+import {rateLimit} from "@/app/lib/rate-limit";
+import {getClientIp} from "@/app/lib/get-client-ip";
 
-export async function CreateServer(formData: FormData): Promise<void> {
+export async function CreateServer(formData: FormData): Promise< {message: string} | void > {
+    const ip = await getClientIp();
+
+    const { allowed } = rateLimit({
+        action: 'CreateServer',
+        identifier: ip,
+        limit: 5,
+        windowMs: 6 * 60 * 1000,
+    });
+
+    if (!allowed) {
+        return { message: 'Try again later.' };
+    }
+
     const cookieStore = await cookies();
     const token = cookieStore.get('sessionToken')?.value;
 
     if (!token) redirect('/login');
 
-    const ServerName = formData.get('ServerName');
+    const ServerName : FormDataEntryValue | null = formData.get('ServerName');
+
+    if (ServerName === null) return { message: 'Must be between 4 and 100 in length.' };
+    const lengthServerName = typeof ServerName === 'string' ? ServerName.length : 0;
+    if (lengthServerName < 4 || lengthServerName > 100) return { message: 'Must be between 4 and 100 in length.' };
 
     const IdUser = await pool.query('SELECT login_id FROM session WHERE cookie = $1', [token]);
 
@@ -34,8 +53,7 @@ export async function CreateServer(formData: FormData): Promise<void> {
 
     await pool.query('INSERT INTO voice_chanels (server_id,name) VALUES ($1,$2)',[serverId,'Lobby'])
 
-    revalidatePath('/', 'layout');
+    revalidatePath('/client', 'layout');
 
-    redirect(`/client/${serverId}`);
-
+    redirect(`/client/${serverId}`)
 }

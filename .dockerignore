@@ -18,6 +18,7 @@ out
 Dockerfile
 .dockerignore
 docker-compose*.yml
+scripts
 Caddyfile
 README.md
 DEPLOY.md

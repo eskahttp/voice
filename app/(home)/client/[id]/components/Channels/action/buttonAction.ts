@@ -22,7 +22,7 @@ export async function TakeChannelsAndServerName(id: string): Promise<Result> {
         pool.query('SELECT name,referal FROM servers WHERE id = $1', [id]),
     ]);
 
-    if (serverRes.rows.length === 0) redirect('/client')
+    if (serverRes.rows.length === 0) redirect('/client/me')
 
     return {
         serverName: serverRes.rows[0],

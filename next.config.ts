@@ -7,6 +7,15 @@ const nextConfig: NextConfig = {
     outputFileTracingIncludes: {
         '/': ['./migrations/**/*'],
     },
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'dianavoice.online',
+                pathname: '/uploads/**',
+            },
+        ],
+    },
 };
 
 export default nextConfig;

@@ -9,9 +9,9 @@ import {
 import '@livekit/components-styles';
 import { Room } from 'livekit-client';
 import { useEffect, useState } from 'react';
+import {useMyAccountStore} from "@/app/stores/MyAccountStores/myAccountStore";
 
 interface Props {
-    Nickname: string;
     room: string;
     onLeave: () => void;
     onRoomConnected?: (room: Room) => void;
@@ -29,9 +29,11 @@ function RoomBridge({ onRoomConnected }: { onRoomConnected?: (r: Room) => void }
     return null;
 }
 
-export default function RoomPage({ Nickname, room, onLeave, onRoomConnected }: Props) {
+export default function RoomPage({ room, onLeave, onRoomConnected }: Props) {
     const [token, setToken] = useState<string>('');
     const [micEnabled, setMicEnabled] = useState<boolean>(true);
+
+    const Nickname = useMyAccountStore((state) => state.nickname)
 
     useEffect(() => {
         try{
@@ -55,12 +57,12 @@ export default function RoomPage({ Nickname, room, onLeave, onRoomConnected }: P
                 const data = await res.json();
                 setToken(data.token);
             } catch (e) {
-                console.error('Не удалось получить токен', e);
+                console.error('Failed to obtain the token', e);
             }
         })();
     }, [room, Nickname]);
 
-    if (!token) return <div>Подключение...</div>;
+    if (!token) return <div>Connection...</div>;
 
     return (
         <LiveKitRoom
