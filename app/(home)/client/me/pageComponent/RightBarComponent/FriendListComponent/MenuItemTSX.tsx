@@ -8,7 +8,7 @@ import {
     CreateMessageConversations
 } from "@/app/(home)/client/me/pageComponent/RightBarComponent/FriendListComponent/createMessageConversations/createMessageConversations";
 import {useUserChatsStore} from "@/app/stores/userChatsStore/userChatsStore";
-import {redirect} from "next/navigation";
+import {useRouter} from "next/navigation";
 
 interface FriendsArr {
     id: number;
@@ -32,10 +32,9 @@ interface Props {
 export function MenuItemTSX({menuRef, menu,setMenu}: Props){
 
     const socket = useSocket()
-
     const addUserChats = useUserChatsStore(state => state.addUserChats)
-
     const setSelectedProfile = useSelectedProfileStore(state => state.setUserId)
+    const router = useRouter();
 
     return (
         <div
@@ -56,7 +55,7 @@ export function MenuItemTSX({menuRef, menu,setMenu}: Props){
             <MenuItemFn onClick={async ()=> {
                 const conversationId = await CreateMessageConversations(menu.friend.id)
                 addUserChats({conversation_id: conversationId,user_id: menu.friend.id,nickname: menu.friend.nickname,login: menu.friend.login,avatar_url: menu.friend.avatar_url})
-                redirect(`/client/me/${conversationId}`)
+                router.push(`/client/me/${conversationId}`)
             }}>
                  Message
             </MenuItemFn>
